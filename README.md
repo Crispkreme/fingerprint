@@ -1,4 +1,4 @@
-## instruction
+## INSTRUCTION
 - open your arduino ide
 - go to libraries
 - find fingerprint by adafruit
