@@ -24,12 +24,14 @@ int user1, user2, user3, user4, user5, user6, user7, user8, user9, user10;
 DateTime now;
 
 // buttons functionality
-int button_register_back;
+const int button_register_back = A0;
 
 void setup() {
 
   // delay(1000);
-  // Serial.begin(9600);
+  Serial.begin(9600);
+  pinMode(button_register_back, INPUT_PULLUP);
+
   // pinMode(register_back, INPUT_PULLUP);
   // pinMode(forward, INPUT_PULLUP);
   // pinMode(reverse, INPUT_PULLUP);
@@ -138,9 +140,11 @@ void loop() {
   // checkKeys();
   // delay(300);
 
-  button_register_back = analogRead(A0);
+  int buttonState = digitalRead(button_register_back); // Read the state of the button
 
-  if(button_register_back == LOW ? 'HIGH' : 'LOW');
+  if (buttonState == LOW) {
+    Serial.println("Button pressed"); 
+  }
 }
 
 // void attendance(int id) {
