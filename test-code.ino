@@ -2,8 +2,13 @@
 #include <EEPROM.h> 
 #include <SoftwareSerial.h>
 #include <Wire.h>
-#include <ThreeWire.h>  
-#include <RtcDS1302.h>
+#include "RTClib.h"
+RTC_DS3231 rtc;
+
+SoftwareSerial fingerPrint(2, 3); // for tx/rx communication between arduino & r305 fingerprint sensor
+
+uint8_t id;
+Adafruit_Fingerprint finger = Adafruit_Fingerprint(&fingerPrint);
 
 #define register_back 14
 #define delete_ok 15
@@ -12,42 +17,19 @@
 #define match 5
 #define indFinger 7
 #define buzzer 5
-#define countof(a) (sizeof(a) / sizeof(a[0]))
-#define records 10
+#define records 10 
 
-SoftwareSerial fingerPrint(2, 3);
-ThreeWire myWire(4,5,2);
-RtcDS1302<ThreeWire> Rtc(myWire);
-
-uint8_t id;
 int user1, user2, user3, user4, user5, user6, user7, user8, user9, user10;
 
-Adafruit_Fingerprint finger = Adafruit_Fingerprint(&fingerPrint);
-RtcDateTime now;
+DateTime now;
 
-void printDateTime(const RtcDateTime& dt)
-{
-  char datestring[20];
-
-  snprintf_P(datestring, 
-    countof(datestring),
-    PSTR("%02u/%02u/%04u %02u:%02u:%02u"),
-    dt.Month(),
-    dt.Day(),
-    dt.Year(),
-    dt.Hour(),
-    dt.Minute(),
-    dt.Second()
-  );
-  Serial.print(datestring);
-}
+// buttons functionality
+int button_register_back;
 
 void setup() {
 
+  delay(1000);
   Serial.begin(9600);
-  finger.begin(57600);
-  Rtc.Begin();
-
   pinMode(register_back, INPUT_PULLUP);
   pinMode(forward, INPUT_PULLUP);
   pinMode(reverse, INPUT_PULLUP);
@@ -56,7 +38,6 @@ void setup() {
   pinMode(buzzer, OUTPUT);
   pinMode(indFinger, OUTPUT);
   digitalWrite(buzzer, LOW);
-  delay(1000);
 
   if (digitalRead(register_back) == 0) {
     digitalWrite(buzzer, HIGH);
@@ -82,81 +63,66 @@ void setup() {
 
     int eepIndex = 0;
     for (int i = 0; i < 30; i++) {
-      if (i + 1 < 10) {
+      if (i + 1 < 10)
         Serial.print('0');
-        Serial.print(i + 1);
-        Serial.print(" ");
-
-        eepIndex = (i * 7);
-        download(eepIndex);
-
-        eepIndex = (i * 7) + 210;
-        download(eepIndex);
-
-        eepIndex = (i * 7) + 420;
-        download(eepIndex);
-
-        eepIndex = (i * 7) + 630;
-        download(eepIndex);
-
-        eepIndex = (i * 7) + 840;
-        download(eepIndex);
-
-        eepIndex = (i * 7) + 1050;
-        download(eepIndex);
-
-        eepIndex = (i * 7) + 1260;
-        download(eepIndex);
-
-        eepIndex = (i * 7) + 1470;
-        download(eepIndex);
-
-        eepIndex = (i * 7) + 1680;
-        download(eepIndex);
-        Serial.println();
-      }
+      Serial.print(i + 1);
+      Serial.print(" ");
+      eepIndex = (i * 7);
+      download(eepIndex);
+      eepIndex = (i * 7) + 210;
+      download(eepIndex);
+      eepIndex = (i * 7) + 420;
+      download(eepIndex);
+      eepIndex = (i * 7) + 630;
+      download(eepIndex);
+      eepIndex = (i * 7) + 840;
+      download(eepIndex);
+      eepIndex = (i * 7) + 1050;
+      download(eepIndex);
+      eepIndex = (i * 7) + 1260;
+      download(eepIndex);
+      eepIndex = (i * 7) + 1470;
+      download(eepIndex);
+      eepIndex = (i * 7) + 1680;
+      download(eepIndex);
+      Serial.println();
     }
   }
 
   if (digitalRead(delete_ok) == 0) {
-    
     Serial.println("Please wait");
     Serial.println("Reseting.....");
     Serial.println();
 
-    for (int i = 1000; i < 1005; i++) {
+    for (int i = 1000; i < 1005; i++)
       EEPROM.write(i, 0);
-    }
-      
-    for (int i = 0; i < 841; i++) {
+
+    for (int i = 0; i < 841; i++)
       EEPROM.write(i, 0xff);
-    }
   }
 
   digitalWrite(buzzer, HIGH);
   delay(500);
   digitalWrite(buzzer, LOW);
-  
   for (int i = 1000; i < 1000 + records; i++) {
-    if (EEPROM.read(i) == 0xff) {
+    if (EEPROM.read(i) == 0xff)
       EEPROM.write(i, 0);
-    }
   }
 
-  Serial.print("compiled: ");
-  Serial.print(__DATE__);
-  Serial.println(__TIME__);
+  finger.begin(57600);
+  Serial.begin(9600);
 
-  RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
-  printDateTime(compiled);
-  Serial.println();
+  if (! rtc.begin())
+    Serial.println("Couldn't find RTC");
+
+  if (rtc.lostPower()) {
+    Serial.println("RTC is NOT running!");
+    rtc.adjust(DateTime(2018, 6, 7, 11, 0, 0));
+  }
 }
 
 void loop() {
-
-  now = Rtc.GetDateTime();
-  printDateTime(now);
-  Serial.println();
+  now = rtc.now();
 
   int result = getFingerprintIDez();
   if (result > 0) {
@@ -170,6 +136,10 @@ void loop() {
   }
   checkKeys();
   delay(300);
+
+  button_register_back = analogRead(A0);
+
+  if(button_register_back == LOW ? 'HIGH' : 'LOW');
 }
 
 void attendance(int id) {
@@ -209,13 +179,13 @@ void attendance(int id) {
   }
 
   int eepIndex = (user * 7) + eepLoc;
-  EEPROM.write(eepIndex++, now.Hour());
-  EEPROM.write(eepIndex++, now.Minute());
-  EEPROM.write(eepIndex++, now.Second());
-  EEPROM.write(eepIndex++, now.Day());
-  EEPROM.write(eepIndex++, now.Month());
-  EEPROM.write(eepIndex++, now.Year() >> 8 );
-  EEPROM.write(eepIndex++, now.Year());
+  EEPROM.write(eepIndex++, now.hour());
+  EEPROM.write(eepIndex++, now.minute());
+  EEPROM.write(eepIndex++, now.second());
+  EEPROM.write(eepIndex++, now.day());
+  EEPROM.write(eepIndex++, now.month());
+  EEPROM.write(eepIndex++, now.year() >> 8 );
+  EEPROM.write(eepIndex++, now.year());
 
   EEPROM.write(1000, user1);
   EEPROM.write(1001, user2);
