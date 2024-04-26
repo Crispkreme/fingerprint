@@ -25,17 +25,19 @@ DateTime now;
 
 // buttons functionality
 const int button_register_back = A0;
+const int button_forward = A1;
+const int button_reverse = A2;
+const int button_delete_ok = A3;
 
 void setup() {
 
   // delay(1000);
   Serial.begin(9600);
   pinMode(button_register_back, INPUT_PULLUP);
+  pinMode(button_forward, INPUT_PULLUP);
+  pinMode(button_reverse, INPUT_PULLUP);
+  pinMode(button_delete_ok, INPUT_PULLUP);
 
-  // pinMode(register_back, INPUT_PULLUP);
-  // pinMode(forward, INPUT_PULLUP);
-  // pinMode(reverse, INPUT_PULLUP);
-  // pinMode(delete_ok, INPUT_PULLUP);
   // pinMode(match, INPUT_PULLUP);
   // pinMode(buzzer, OUTPUT);
   // pinMode(indFinger, OUTPUT);
@@ -140,10 +142,33 @@ void loop() {
   // checkKeys();
   // delay(300);
 
-  int buttonState = digitalRead(button_register_back); // Read the state of the button
+  int buttonRegisterBackState = digitalRead(button_register_back);
+  int buttonForwardState = digitalRead(button_forward);
+  int buttonReverseState = digitalRead(button_reverse);
+  int buttonDeleteOkState = digitalRead(button_delete_ok);
 
-  if (buttonState == LOW) {
-    Serial.println("Button pressed"); 
+  if (buttonRegisterBackState == LOW) {
+    Serial.println("Button register back is low"); 
+  } else {
+    Serial.println("Button register back is high"); 
+  }
+
+  if (buttonForwardState == LOW) {
+    Serial.println("Button forward back is low"); 
+  } else {
+    Serial.println("Button forward back is high"); 
+  }
+
+  if (buttonReverseState == LOW) {
+    Serial.println("Button reverse back is low"); 
+  } else {
+    Serial.println("Button reverse back is high"); 
+  }
+
+  if (buttonDeleteOkState == LOW) {
+    Serial.println("Button delete back is low"); 
+  } else {
+    Serial.println("Button delete back is high"); 
   }
 }
 
