@@ -38,60 +38,11 @@ void setup() {
   pinMode(button_reverse, INPUT_PULLUP);
   pinMode(button_delete_ok, INPUT_PULLUP);
 
+  digitalWrite(buzzer, LOW);
+
   // pinMode(match, INPUT_PULLUP);
   // pinMode(buzzer, OUTPUT);
   // pinMode(indFinger, OUTPUT);
-  // digitalWrite(buzzer, LOW);
-
-  // if (digitalRead(register_back) == 0) {
-  //   digitalWrite(buzzer, HIGH);
-  //   delay(500);
-  //   digitalWrite(buzzer, LOW);
-
-  //   Serial.println("Please wait");
-  //   Serial.println("Downloding Data..");
-  //   Serial.println();
-
-  //   Serial.print("S.No. ");
-
-  //   for (int i = 0; i < records; i++) {
-  //     digitalWrite(buzzer, HIGH);
-  //     delay(500);
-  //     digitalWrite(buzzer, LOW);
-  //     Serial.print(" User ID");
-  //     Serial.print(i + 1);
-  //     Serial.print(" ");
-  //   }
-
-  //   Serial.println();
-
-  //   int eepIndex = 0;
-  //   for (int i = 0; i < 30; i++) {
-  //     if (i + 1 < 10)
-  //       Serial.print('0');
-  //     Serial.print(i + 1);
-  //     Serial.print(" ");
-  //     eepIndex = (i * 7);
-  //     download(eepIndex);
-  //     eepIndex = (i * 7) + 210;
-  //     download(eepIndex);
-  //     eepIndex = (i * 7) + 420;
-  //     download(eepIndex);
-  //     eepIndex = (i * 7) + 630;
-  //     download(eepIndex);
-  //     eepIndex = (i * 7) + 840;
-  //     download(eepIndex);
-  //     eepIndex = (i * 7) + 1050;
-  //     download(eepIndex);
-  //     eepIndex = (i * 7) + 1260;
-  //     download(eepIndex);
-  //     eepIndex = (i * 7) + 1470;
-  //     download(eepIndex);
-  //     eepIndex = (i * 7) + 1680;
-  //     download(eepIndex);
-  //     Serial.println();
-  //   }
-  // }
 
   // if (digitalRead(delete_ok) == 0) {
   //   Serial.println("Please wait");
@@ -127,9 +78,9 @@ void setup() {
 }
 
 void loop() {
-  // now = rtc.now();
+  now = rtc.now();
+  int result = getFingerprintIDez();
 
-  // int result = getFingerprintIDez();
   // if (result > 0) {
   //   digitalWrite(indFinger, LOW);
   //   digitalWrite(buzzer, HIGH);
@@ -147,10 +98,67 @@ void loop() {
   int buttonReverseState = digitalRead(button_reverse);
   int buttonDeleteOkState = digitalRead(button_delete_ok);
 
-  if (buttonRegisterBackState == LOW) {
-    Serial.println("Button register back is low"); 
+  if (buttonRegisterBackState == HIGH) {
+    
+    buzzerSound();
+
+    Serial.println("Please wait");
+    Serial.println("Downloding Data..");
+    Serial.println();
+
+    Serial.print("S.No. ");
+
+    for (int i = 0; i < records; i++) {
+      
+      buzzerSound();
+
+      Serial.print(" User ID");
+      Serial.print(i + 1);
+      Serial.print(" ");
+    }
+
+    Serial.println();
+
+    int eepIndex = 0;
+    for (int i = 0; i < 30; i++) {
+      if (i + 1 < 10)
+
+        Serial.print('0');
+        Serial.print(i + 1);
+        Serial.print(" ");
+
+        eepIndex = (i * 7);
+        download(eepIndex);
+
+        eepIndex = (i * 7) + 210;
+        download(eepIndex);
+
+        eepIndex = (i * 7) + 420;
+        download(eepIndex);
+
+        eepIndex = (i * 7) + 630;
+        download(eepIndex);
+
+        eepIndex = (i * 7) + 840;
+        download(eepIndex);
+
+        eepIndex = (i * 7) + 1050;
+        download(eepIndex);
+
+        eepIndex = (i * 7) + 1260;
+        download(eepIndex);
+
+        eepIndex = (i * 7) + 1470;
+        download(eepIndex);
+
+        eepIndex = (i * 7) + 1680;
+        download(eepIndex);
+
+      Serial.println();
+    }
+
   } else {
-    Serial.println("Button register back is high"); 
+    Serial.println("Error: buttonRegisterBackState is not working"); 
   }
 
   if (buttonForwardState == LOW) {
@@ -170,6 +178,13 @@ void loop() {
   } else {
     Serial.println("Button delete back is high"); 
   }
+}
+
+void buzzerSound()
+{
+  digitalWrite(buzzer, HIGH);
+  delay(500);
+  digitalWrite(buzzer, LOW);
 }
 
 // void attendance(int id) {
@@ -362,23 +377,23 @@ void loop() {
 //   }
 // }
 
-// int getFingerprintIDez() {
-//   uint8_t p = finger.getImage();
+int getFingerprintIDez() {
+  uint8_t p = finger.getImage();
 
-//   if (p != FINGERPRINT_OK)
-//     return -1;
+  if (p != FINGERPRINT_OK)
+    return -1;
 
-//   p = finger.image2Tz();
-//   if (p != FINGERPRINT_OK)
-//     return -1;
+  p = finger.image2Tz();
+  if (p != FINGERPRINT_OK)
+    return -1;
 
-//   p = finger.fingerFastSearch();
-//   if (p != FINGERPRINT_OK) {
-//     return -1;
-//   }
+  p = finger.fingerFastSearch();
+  if (p != FINGERPRINT_OK) {
+    return -1;
+  }
 
-//   return finger.fingerID;
-// }
+  return finger.fingerID;
+}
 
 // uint8_t deleteFingerprint(uint8_t id) {
 //   uint8_t p = -1;
