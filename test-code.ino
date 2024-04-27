@@ -51,30 +51,30 @@ void loop() {
 
   // Read the state of the button
   int buttonStateRegisterBack = digitalRead(buttonRegisterBack);
-  int buttonStateForward = digitalRead(buttonForward);
-  int buttonStateReverse = digitalRead(buttonReverse);
   int buttonStateDeleteOK = digitalRead(buttonDeleteOK);
 
   if (digitalRead(buttonRegisterBack) == LOW) {
 
     donwloadExistingData();
+    delay(1000);
+    actionData(1);
 
     Serial.println("buttonStateRegisterBack is pressed");
-  }
-
-  if (digitalRead(buttonForward) == LOW) {
-    Serial.println("buttonStateForward is pressed");
-  }
-
-  if (digitalRead(buttonReverse) == LOW) {
-    Serial.println("buttonStateReverse is pressed");
   }
 
   if (digitalRead(buttonDeleteOK) == LOW) {
 
     resettingExistingData();
-    
+    delay(1000);
+    actionData(2);
+
     Serial.println("buttonStateDeleteOK is pressed");
+  }
+
+  buzzerSound();
+
+  for (int i = 1000; i < 1000 + records; i++) {
+    if (EEPROM.read(i) == 0xff) EEPROM.write(i, 0);
   }
 }
 
@@ -206,4 +206,203 @@ void download(int eepIndex) {
     Serial.print("---------------------------");
   }
   Serial.print(" ");
+}
+
+void actionData(int action) {
+
+  int count = 1;
+
+  int buttonStateRegisterBack = digitalRead(buttonRegisterBack);
+  int buttonStateForward = digitalRead(buttonForward);
+  int buttonStateReverse = digitalRead(buttonReverse);
+  int buttonStateDeleteOK = digitalRead(buttonDeleteOK);
+
+  while (1) {
+    if (digitalRead(buttonForward) == LOW) {
+      count++;
+      if (count > records) count = 1;
+      delay(500);
+    } else if (digitalRead(buttonReverse) == LOW) {
+      count--;
+      if (count < 1) count = records;
+      delay(500);
+    } else if (digitalRead(buttonStateDeleteOK) == LOW) {
+      id = count;
+
+      if(action == 1) {
+
+        getFingerprintEnroll();
+
+        for (int i = 0; i < records; i++) {
+          if (EEPROM.read(i) != 0xff) {
+            EEPROM.write(i, id);
+            break;
+          }
+        }
+        return;
+
+      } else if(action == 2) {
+        
+        deleteFingerprint(id);
+
+        for (int i = 0; i < records; i++) {
+          if (EEPROM.read(i) == id) {
+            EEPROM.write(i, 0xff);
+            break;
+          }
+        }
+        return;
+      } else {
+        Serial.println("Error: Please try again");
+      }
+      
+    } else if (digitalRead(buttonStateRegisterBack) == LOW) {
+      return;
+    } else {
+      Serial.println("Error: Please try again");
+    }
+  }
+}
+
+void attendance(int id) {
+  int user = 0, eepLoc = 0;
+
+  switch (id) {
+    case 1:
+      eepLoc = 0;
+      user = user1++;
+      break;
+    case 2:
+      eepLoc = 210;
+      user = user2++;
+      break;
+    case 3:
+      eepLoc = 420;
+      user = user3++;
+      break;
+    case 4:
+      eepLoc = 630;
+      user = user4++;
+      break;
+    case 5:
+      eepLoc = 0;
+      user = user5++;
+      break;
+    case 6:
+      eepLoc = 840;
+      user = user5++;
+      break;
+    case 7:
+      eepLoc = 1050;
+      user = user7++;
+      break;
+    case 8:
+      eepLoc = 1260;
+      user = user8++;
+      break;
+    case 9:
+      eepLoc = 1470;
+      user = user9++;
+      break;
+    case 10:
+      eepLoc = 1680;
+      user = user8++;
+      break;
+    default:
+      return;
+  }
+
+  int eepIndex = (user * 7) + eepLoc;
+
+  EEPROM.write(eepIndex++, now.hour());
+  EEPROM.write(eepIndex++, now.minute());
+  EEPROM.write(eepIndex++, now.second());
+  EEPROM.write(eepIndex++, now.day());
+  EEPROM.write(eepIndex++, now.month());
+  EEPROM.write(eepIndex++, now.year() >> 8 );
+  EEPROM.write(eepIndex++, now.year());
+
+  EEPROM.write(1000, user1);
+  EEPROM.write(1001, user2);
+  EEPROM.write(1002, user3);
+  EEPROM.write(1003, user4);
+}
+
+uint8_t getFingerprintEnroll() {
+  int p = -1;
+
+  while (p != FINGERPRINT_OK) {
+    p = finger.getImage();
+
+    switch (p) {
+      case FINGERPRINT_OK:
+        break;
+      case FINGERPRINT_NOFINGER:
+        break;
+      case FINGERPRINT_PACKETRECIEVEERR:
+        break;
+      case FINGERPRINT_IMAGEFAIL:
+        break;
+      default:
+        break;
+    }
+  }
+
+  p = finger.image2Tz(1);
+
+  switch (p) {
+    case FINGERPRINT_OK:
+      break;
+    case FINGERPRINT_IMAGEMESS:
+      return p;
+    case FINGERPRINT_PACKETRECIEVEERR:
+      return p;
+    case FINGERPRINT_FEATUREFAIL:
+      return p;
+    case FINGERPRINT_INVALIDIMAGE:
+      return p;
+    default:
+      return p;
+  }
+
+  while (p != FINGERPRINT_NOFINGER) {
+    p = finger.getImage();
+  }
+
+  p = finger.image2Tz(2);
+
+  switch (p) {
+    case FINGERPRINT_OK:
+      break;
+    case FINGERPRINT_IMAGEMESS:
+      return p;
+    case FINGERPRINT_PACKETRECIEVEERR:
+      return p;
+    case FINGERPRINT_FEATUREFAIL:
+      return p;
+    case FINGERPRINT_INVALIDIMAGE:
+      return p;
+    default:
+      return p;
+  }
+
+  p = finger.createModel();
+  if (p != FINGERPRINT_OK) {
+    return p;
+  }
+
+  p = finger.storeModel(id);
+  if (p != FINGERPRINT_OK) {
+    return p;
+  }
+}
+
+uint8_t deleteFingerprint(uint8_t id) {
+  uint8_t p = -1;
+
+  p = finger.deleteModel(id);
+  if (p == FINGERPRINT_OK) {
+    return p;
+  }
+  return p;
 }
