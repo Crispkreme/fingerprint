@@ -25,7 +25,7 @@ int user1, user2, user3, user4, user5, user6, user7, user8, user9, user10;
 DateTime now;
 
 // FOR REGISTRATION
-const int button_register_back = A0;
+const int button_register_back = 4;
 const int button_forward = A1;
 const int button_reverse = A2;
 const int button_delete_ok = A3;
@@ -37,7 +37,7 @@ const int button_room_3 = 10;
 const int button_room_4 = 11;
 
 // GLOBAL VARIABLES
-int buttonRegisterBackState;
+bool buttonRegisterBackState = false;
 int buttonForwardState;
 int buttonReverseState;
 int buttonDeleteOkState;
@@ -53,7 +53,7 @@ void setup() {
   Serial.begin(9600);
 
   // PIN CONFIGURATION
-  pinMode(button_register_back, INPUT_PULLUP);
+  pinMode(button_register_back, INPUT);
   pinMode(button_forward, INPUT_PULLUP);
   pinMode(button_reverse, INPUT_PULLUP);
   pinMode(button_delete_ok, INPUT_PULLUP);
@@ -97,7 +97,7 @@ void loop() {
   for (int i = 1000; i < 1000 + records; i++) {
     if (EEPROM.read(i) == 0xff) EEPROM.write(i, 0);
   }
-  
+
   // LOGIN TAKE PLACE
   buttonRoom1 = digitalRead(button_room_1);
   buttonRoom2 = digitalRead(button_room_2);
