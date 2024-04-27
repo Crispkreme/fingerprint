@@ -57,7 +57,7 @@ void loop() {
 
     donwloadExistingData();
     delay(1000);
-    actionData(1);
+    enrollData();
 
     Serial.println("buttonStateRegisterBack is pressed");
   }
@@ -66,12 +66,9 @@ void loop() {
 
     resettingExistingData();
     delay(1000);
-    actionData(2);
 
     Serial.println("buttonStateDeleteOK is pressed");
   }
-
-  buzzerSound();
 
   for (int i = 1000; i < 1000 + records; i++) {
     if (EEPROM.read(i) == 0xff) EEPROM.write(i, 0);
@@ -208,7 +205,7 @@ void download(int eepIndex) {
   Serial.print(" ");
 }
 
-void actionData(int action) {
+void enrollData() {
 
   int count = 1;
 
@@ -220,46 +217,26 @@ void actionData(int action) {
   while (1) {
     if (digitalRead(buttonForward) == LOW) {
       count++;
-      if (count > records) count = 1;
+      if (count > records)
+        count = 1;
       delay(500);
     } else if (digitalRead(buttonReverse) == LOW) {
       count--;
-      if (count < 1) count = records;
+      if (count < 1)
+        count = records;
       delay(500);
     } else if (digitalRead(buttonStateDeleteOK) == LOW) {
       id = count;
-
-      if(action == 1) {
-
-        getFingerprintEnroll();
-
-        for (int i = 0; i < records; i++) {
-          if (EEPROM.read(i) != 0xff) {
-            EEPROM.write(i, id);
-            break;
-          }
+      getFingerprintEnroll();
+      for (int i = 0; i < records; i++) {
+        if (EEPROM.read(i) != 0xff) {
+          EEPROM.write(i, id);
+          break;
         }
-        return;
-
-      } else if(action == 2) {
-        
-        deleteFingerprint(id);
-
-        for (int i = 0; i < records; i++) {
-          if (EEPROM.read(i) == id) {
-            EEPROM.write(i, 0xff);
-            break;
-          }
-        }
-        return;
-      } else {
-        Serial.println("Error: Please try again");
       }
-      
+      return;
     } else if (digitalRead(buttonStateRegisterBack) == LOW) {
       return;
-    } else {
-      Serial.println("Error: Please try again");
     }
   }
 }
