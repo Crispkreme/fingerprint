@@ -19,10 +19,10 @@ int user1, user2, user3, user4, user5, user6, user7, user8, user9, user10;
 DateTime now;
 
 // Define variables
-#define buttonRegisterBack A0; 
-#define buttonForward A1; 
-#define buttonReverse A2; 
-#define buttonDeleteOK A3; 
+const int buttonRegisterBack = A0; 
+const int buttonForward = A1; 
+const int buttonReverse = A2; 
+const int buttonDeleteOK = A3; 
 
 int ledPin = 13;  
 
@@ -57,43 +57,57 @@ void loop() {
   int buttonStateReverse = digitalRead(buttonReverse);
   int buttonStateDeleteOK = digitalRead(buttonDeleteOK);
 
+  Serial.println("buttonStateRegisterBack: " + buttonStateRegisterBack);
+  Serial.println("buttonStateForward: " + buttonStateForward);
+  Serial.println("buttonStateReverse: " + buttonStateReverse);
+  Serial.println("buttonStateDeleteOK: " + buttonStateDeleteOK);
+
   // Check if the button is pressed
   if (buttonStateRegisterBack == HIGH){
 
     digitalWrite(ledPin, HIGH);   
     donwloadExistingData();
+    Serial.println("button high");
 
   } else {
     digitalWrite(ledPin, LOW);   
+    Serial.println("button LOW");
   }
 
   // Check if the button is pressed
   if (buttonStateForward == HIGH){
-    digitalWrite(ledPin, HIGH);   
+    digitalWrite(ledPin, HIGH);  
+    Serial.println("button high"); 
   } else {
     digitalWrite(ledPin, LOW);   
+    Serial.println("button LOW");
   }
 
   // Check if the button is pressed
   if (buttonStateReverse == HIGH){
-    digitalWrite(ledPin, HIGH);   
+    digitalWrite(ledPin, HIGH);  
+    Serial.println("button high"); 
   } else {
     digitalWrite(ledPin, LOW);   
+    Serial.println("button LOW");
   }
 
   // Check if the button is pressed
   if (buttonStateDeleteOK == HIGH){
-    digitalWrite(ledPin, HIGH);   
+    digitalWrite(ledPin, HIGH);  
+    Serial.println("button high"); 
 
     resettingExistingData();
   } else {
     digitalWrite(ledPin, LOW);   
+    Serial.println("button LOW");
   }
 }
 
 void donwloadExistingData()
 {
   buzzerSound();
+
   displayMessage("Downloding Data..");
   Serial.print("S.No. ");
 
