@@ -29,7 +29,7 @@ int ledPin = 13;
 void setup() {
   Serial.begin(9600);
   finger.begin(57600);
-  Serial.begin(9600);
+  rtc.begin();
 
   pinMode(ledPin, OUTPUT);    
   pinMode(buttonRegisterBack, INPUT_PULLUP);
@@ -47,9 +47,7 @@ void setup() {
 }
 
 void loop() {
-
   now = rtc.now();
-  int result = getFingerprintIDez();
 
   // Read the state of the button
   int buttonStateRegisterBack = digitalRead(buttonRegisterBack);
@@ -57,50 +55,26 @@ void loop() {
   int buttonStateReverse = digitalRead(buttonReverse);
   int buttonStateDeleteOK = digitalRead(buttonDeleteOK);
 
-  Serial.println("buttonStateRegisterBack: " + buttonStateRegisterBack);
-  Serial.println("buttonStateForward: " + buttonStateForward);
-  Serial.println("buttonStateReverse: " + buttonStateReverse);
-  Serial.println("buttonStateDeleteOK: " + buttonStateDeleteOK);
+  if (digitalRead(buttonRegisterBack) == LOW) {
 
-  // Check if the button is pressed
-  if (buttonStateRegisterBack == HIGH){
-
-    digitalWrite(ledPin, HIGH);   
     donwloadExistingData();
-    Serial.println("button high");
 
-  } else {
-    digitalWrite(ledPin, LOW);   
-    Serial.println("button LOW");
+    Serial.println("buttonStateRegisterBack is pressed");
   }
 
-  // Check if the button is pressed
-  if (buttonStateForward == HIGH){
-    digitalWrite(ledPin, HIGH);  
-    Serial.println("button high"); 
-  } else {
-    digitalWrite(ledPin, LOW);   
-    Serial.println("button LOW");
+  if (digitalRead(buttonForward) == LOW) {
+    Serial.println("buttonStateForward is pressed");
   }
 
-  // Check if the button is pressed
-  if (buttonStateReverse == HIGH){
-    digitalWrite(ledPin, HIGH);  
-    Serial.println("button high"); 
-  } else {
-    digitalWrite(ledPin, LOW);   
-    Serial.println("button LOW");
+  if (digitalRead(buttonReverse) == LOW) {
+    Serial.println("buttonStateReverse is pressed");
   }
 
-  // Check if the button is pressed
-  if (buttonStateDeleteOK == HIGH){
-    digitalWrite(ledPin, HIGH);  
-    Serial.println("button high"); 
+  if (digitalRead(buttonDeleteOK) == LOW) {
 
     resettingExistingData();
-  } else {
-    digitalWrite(ledPin, LOW);   
-    Serial.println("button LOW");
+    
+    Serial.println("buttonStateDeleteOK is pressed");
   }
 }
 
