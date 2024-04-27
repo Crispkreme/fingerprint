@@ -19,28 +19,23 @@ int user1, user2, user3, user4, user5, user6, user7, user8, user9, user10;
 DateTime now;
 
 // Define variables
-int buttonRegisterBack = A0; 
-int buttonForward = A1; 
-int buttonReverse = A2; 
-int buttonDeleteOK = A3; 
+#define buttonRegisterBack A0; 
+#define buttonForward A1; 
+#define buttonReverse A2; 
+#define buttonDeleteOK A3; 
 
 int ledPin = 13;  
-
-bool buttonStateRegisterBack = false;
-bool buttonStateForward = false;
-bool buttonStateReverse = false;
-bool buttonStateDeleteOK = false;
 
 void setup() {
   Serial.begin(9600);
   finger.begin(57600);
   Serial.begin(9600);
 
-  pinMode(ledPin, OUTPUT);    // LED pin as an output.
-  pinMode(buttonRegisterBack, INPUT);  // Button pin as an input.
-  pinMode(buttonForward, INPUT);  // Button pin as an input.
-  pinMode(buttonReverse, INPUT);  // Button pin as an input.
-  pinMode(buttonDeleteOK, INPUT);  // Button pin as an input.
+  pinMode(ledPin, OUTPUT);    
+  pinMode(buttonRegisterBack, INPUT_PULLUP);
+  pinMode(buttonForward, INPUT_PULLUP);
+  pinMode(buttonReverse, INPUT_PULLUP);
+  pinMode(buttonDeleteOK, INPUT_PULLUP);
 
   pinMode(buzzer, OUTPUT);
   pinMode(indFinger, OUTPUT);
@@ -57,10 +52,10 @@ void loop() {
   int result = getFingerprintIDez();
 
   // Read the state of the button
-  buttonStateRegisterBack = digitalRead(buttonRegisterBack);
-  buttonStateForward = digitalRead(buttonForward);
-  buttonStateReverse = digitalRead(buttonReverse);
-  buttonStateDeleteOK = digitalRead(buttonDeleteOK);
+  int buttonStateRegisterBack = digitalRead(buttonRegisterBack);
+  int buttonStateForward = digitalRead(buttonForward);
+  int buttonStateReverse = digitalRead(buttonReverse);
+  int buttonStateDeleteOK = digitalRead(buttonDeleteOK);
 
   // Check if the button is pressed
   if (buttonStateRegisterBack == HIGH){
