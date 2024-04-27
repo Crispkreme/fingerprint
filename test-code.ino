@@ -41,6 +41,7 @@ int buttonRegisterBackState;
 int buttonForwardState;
 int buttonReverseState;
 int buttonDeleteOkState;
+
 int buttonRoom1;
 int buttonRoom2;
 int buttonRoom3;
@@ -65,16 +66,6 @@ void setup() {
   pinMode(buzzer, OUTPUT);
   pinMode(indFinger, OUTPUT);
 
-  donwloadExistingData();
-
-  resettingExistingData();
-
-  buzzerSound();
-
-  for (int i = 1000; i < 1000 + records; i++) {
-    if (EEPROM.read(i) == 0xff) EEPROM.write(i, 0);
-  }
-
   if (rtc.lostPower()) {
     Serial.println("RTC is NOT running!");
     rtc.adjust(DateTime(2018, 6, 7, 11, 0, 0));
@@ -85,6 +76,28 @@ void loop() {
   now = rtc.now();
   int result = getFingerprintIDez();
 
+  // initialization
+  buttonRegisterBackState = digitalRead(button_register_back);
+  buttonDeleteOkState = digitalRead(button_delete_ok);
+
+  if(buttonRegisterBackState == HIGH)
+  {
+    // donwloadExistingData();
+    Serial.println('register is click');
+  }
+
+  if(buttonDeleteOkState == HIGH)
+  {
+    // resettingExistingData();
+    Serial.println('delete is click');
+  }
+  
+  buzzerSound();
+
+  for (int i = 1000; i < 1000 + records; i++) {
+    if (EEPROM.read(i) == 0xff) EEPROM.write(i, 0);
+  }
+  
   // LOGIN TAKE PLACE
   buttonRoom1 = digitalRead(button_room_1);
   buttonRoom2 = digitalRead(button_room_2);
@@ -140,6 +153,7 @@ void loop() {
   }  
 
   checkKeys();
+
   delay(300);
 }
 
@@ -204,6 +218,8 @@ void donwloadExistingData()
       }
     }
   }
+
+  delay(1000);
 }
 
 void resettingExistingData() 
@@ -217,6 +233,8 @@ void resettingExistingData()
     for (int i = 1000; i < 1005; i++) EEPROM.write(i, 0);
     for (int i = 0; i < 841; i++) EEPROM.write(i, 0xff);
   }
+
+  delay(1000);
 }
 
 void buzzerSound()
