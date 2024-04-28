@@ -33,13 +33,12 @@ const int buttonForward = A1;
 const int buttonReverse = A2; 
 const int buttonDeleteOK = A3; 
 
-const int buttonRoom1 = 8; 
-const int buttonRoom2 = 9; 
-const int buttonRoom3 = 10; 
-const int buttonRoom4 = 11; 
+const int buttonRoom1 = 7; 
+const int buttonRoom2 = 8; 
+const int buttonRoom3 = 9; 
+const int buttonRoom4 = 10; 
+const int buttonRoom5 = 11; 
 
-const int buttonDisplayData = 7; 
-buttonRoom1
 int ledPin = 13;  
 
 void setup() {
@@ -59,7 +58,7 @@ void setup() {
   pinMode(buttonRoom2, INPUT_PULLUP);
   pinMode(buttonRoom3, INPUT_PULLUP);
   pinMode(buttonRoom4, INPUT_PULLUP);
-  pinMode(buttonDisplayData, INPUT_PULLUP);
+  pinMode(buttonRoom5, INPUT_PULLUP);
 
   pinMode(buzzer, OUTPUT);
   pinMode(indFinger, OUTPUT);
@@ -92,6 +91,7 @@ void setup() {
   user3=EEPROM.read(1002);
   user4=EEPROM.read(1003);
   user5=EEPROM.read(1004);
+
   digitalWrite(indFinger, HIGH);
 }
 
@@ -532,17 +532,68 @@ void loop() {
   int result = getFingerprintIDez();
   
   if(result > 0) {
-    digitalWrite(indFinger, LOW);
+  
+    if (digitalRead(buttonRoom1) == LOW) {
 
-    buzzerSound();
+      digitalWrite(indFinger, LOW);
+      buzzerSound();
+      attendance(result);
+      digitalWrite(indFinger, HIGH);
+      return;
+      
+      Serial.println("user id: " + String(result));
+      Serial.println("purpose: Room 1");
+      Serial.println("date: April 28, 2024");
+    }
 
-    delay(1000);
-    attendance(result);
+    if (digitalRead(buttonRoom2) == LOW) {
+      digitalWrite(indFinger, LOW);
+      buzzerSound();
+      attendance(result);
+      digitalWrite(indFinger, HIGH);
+      return;
+      
+      Serial.println("user id: " + String(result));
+      Serial.println("purpose: Room 2");
+      Serial.println("date: April 28, 2024");
+    }
 
-    Serial.println("Attendance");
-    Serial.println("Registered");
-    digitalWrite(indFinger, HIGH);
-    return;
+    if (digitalRead(buttonRoom3) == LOW) {
+      digitalWrite(indFinger, LOW);
+      buzzerSound();
+      attendance(result);
+      digitalWrite(indFinger, HIGH);
+      return;
+      
+      Serial.println("user id: " + String(result));
+      Serial.println("purpose: Room 3");
+      Serial.println("date: April 28, 2024");
+    }
+
+    if (digitalRead(buttonRoom4) == LOW) {
+      digitalWrite(indFinger, LOW);
+      buzzerSound();
+      attendance(result);
+      digitalWrite(indFinger, HIGH);
+      return;
+      
+      Serial.println("user id: " + String(result));
+      Serial.println("purpose: Room 4");
+      Serial.println("date: April 28, 2024");
+    }
+
+    if (digitalRead(buttonRoom5) == LOW) {
+      digitalWrite(indFinger, LOW);
+      buzzerSound();
+      attendance(result);
+      digitalWrite(indFinger, HIGH);
+      return;
+      
+      Serial.println("user id: " + String(result));
+      Serial.println("purpose: Room 5");
+      Serial.println("date: April 28, 2024");
+    }
+    
   } else {
     checkKeys();
     delay(1000);
@@ -550,25 +601,5 @@ void loop() {
 
   for (int i = 1000; i < 1000 + records; i++) {
     if (EEPROM.read(i) == 0xff) EEPROM.write(i, 0);
-  }
-
-  if (digitalRead(buttonRoom1) == LOW) {
-    Serial.println("buttonRoom1 is pressed");
-  }
-
-  if (digitalRead(buttonRoom2) == LOW) {
-    Serial.println("buttonRoom2 is pressed");
-  }
-
-  if (digitalRead(buttonRoom3) == LOW) {
-    Serial.println("buttonRoom3 is pressed");
-  }
-
-  if (digitalRead(buttonRoom4) == LOW) {
-    Serial.println("buttonRoom4 is pressed");
-  }
-
-  if (digitalRead(buttonDisplayData) == LOW) {
-    Serial.println("buttonDisplayData is pressed");
   }
 }
