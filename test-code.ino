@@ -218,19 +218,19 @@ void enrollData() {
     if (digitalRead(buttonForward) == LOW) {
 
       count++;
+      Serial.println('User Id: ' + String(count));
       if (count > records) count = 1;
-      Serial.println('User Id: ' + count);
-      
       delay(500);
+      
     } else if (digitalRead(buttonReverse) == LOW) {
 
       count--;
+      Serial.println('User Id: ' + String(count));
       if (count < 1) count = records;
-      Serial.println('User Id: ' + count);
-
       delay(500);
+
     } else if (digitalRead(buttonStateDeleteOK) == LOW) {
-      
+
       id = count;
       getFingerprintEnroll();
       for (int i = 0; i < records; i++) {
