@@ -230,7 +230,7 @@ void enrollData() {
       if (count < 1) count = records;
       delay(500);
 
-    } else if (digitalRead(buttonStateDeleteOK) == LOW) {
+    } else if (digitalRead(buttonDeleteOK) == LOW) {
 
       id = count;
       getFingerprintEnroll();
@@ -314,12 +314,11 @@ void attendance(int id) {
 uint8_t getFingerprintEnroll() {
   int p = -1;
 
-  Serial.println("User id:");
-  Serial.print(id);
+  Serial.println("User id: " + id);
   delay(1000);
 
   Serial.println("Place Finger");
-  delay(1000);
+  delay(3000);
 
   while (p != FINGERPRINT_OK) {
     p = finger.getImage();
@@ -366,7 +365,7 @@ uint8_t getFingerprintEnroll() {
   }
 
   Serial.println("Remove finger");
-  delay(1000);
+  delay(3000);
 
   p = 0;
 
@@ -374,8 +373,7 @@ uint8_t getFingerprintEnroll() {
     p = finger.getImage();
   }
 
-  Serial.println("ID: "); 
-  Serial.print(id);
+  Serial.println("User id: " + id);
   Serial.println("Place same finger again");
   p = -1;
   while (p != FINGERPRINT_OK) {
@@ -423,8 +421,7 @@ uint8_t getFingerprintEnroll() {
       return p;
   }
 
-  Serial.println("Creating model for #"); 
-  Serial.print(id);
+  Serial.println("Creating model for # " + id); 
 
   p = finger.createModel();
   if (p == FINGERPRINT_OK) {
@@ -447,8 +444,8 @@ uint8_t getFingerprintEnroll() {
     return p;
   }
 
-  Serial.println("ID: "); 
-  Serial.print(id);
+  Serial.println("User id: " + id);
+  delay(1000);
 
   p = finger.storeModel(id);
   if (p == FINGERPRINT_OK) {
