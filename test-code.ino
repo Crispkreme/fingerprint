@@ -14,7 +14,16 @@ Adafruit_Fingerprint finger = Adafruit_Fingerprint(&fingerPrint);
 #define match 5
 #define records 10 // 10 for 10 user
 
-int user1, user2, user3, user4, user5, user6, user7, user8, user9, user10;
+int user1, 
+    user2, 
+    user3, 
+    user4, 
+    user5, 
+    user6, 
+    user7, 
+    user8, 
+    user9, 
+    user10;
 
 DateTime now;
 
@@ -24,6 +33,13 @@ const int buttonForward = A1;
 const int buttonReverse = A2; 
 const int buttonDeleteOK = A3; 
 
+const int buttonRoom1 = 8; 
+const int buttonRoom2 = 9; 
+const int buttonRoom3 = 10; 
+const int buttonRoom4 = 11; 
+
+const int buttonDisplayData = 7; 
+buttonRoom1
 int ledPin = 13;  
 
 void setup() {
@@ -33,10 +49,17 @@ void setup() {
   rtc.begin();
 
   pinMode(ledPin, OUTPUT);    
+
   pinMode(buttonRegisterBack, INPUT_PULLUP);
   pinMode(buttonForward, INPUT_PULLUP);
   pinMode(buttonReverse, INPUT_PULLUP);
   pinMode(buttonDeleteOK, INPUT_PULLUP);
+
+  pinMode(buttonRoom1, INPUT_PULLUP);
+  pinMode(buttonRoom2, INPUT_PULLUP);
+  pinMode(buttonRoom3, INPUT_PULLUP);
+  pinMode(buttonRoom4, INPUT_PULLUP);
+  pinMode(buttonDisplayData, INPUT_PULLUP);
 
   pinMode(buzzer, OUTPUT);
   pinMode(indFinger, OUTPUT);
@@ -486,10 +509,6 @@ uint8_t deleteFingerprint(uint8_t id) {
 
 void checkKeys() {
 
-  // Read the state of the button
-  int buttonStateRegisterBack = digitalRead(buttonRegisterBack);
-  int buttonStateDeleteOK = digitalRead(buttonDeleteOK);
-
   if (digitalRead(buttonRegisterBack) == LOW) {
 
     donwloadExistingData();
@@ -531,5 +550,25 @@ void loop() {
 
   for (int i = 1000; i < 1000 + records; i++) {
     if (EEPROM.read(i) == 0xff) EEPROM.write(i, 0);
+  }
+
+  if (digitalRead(buttonRoom1) == LOW) {
+    Serial.println("buttonRoom1 is pressed");
+  }
+
+  if (digitalRead(buttonRoom2) == LOW) {
+    Serial.println("buttonRoom2 is pressed");
+  }
+
+  if (digitalRead(buttonRoom3) == LOW) {
+    Serial.println("buttonRoom3 is pressed");
+  }
+
+  if (digitalRead(buttonRoom4) == LOW) {
+    Serial.println("buttonRoom4 is pressed");
+  }
+
+  if (digitalRead(buttonDisplayData) == LOW) {
+    Serial.println("buttonDisplayData is pressed");
   }
 }
