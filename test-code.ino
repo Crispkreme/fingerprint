@@ -11,7 +11,7 @@ Adafruit_Fingerprint finger = Adafruit_Fingerprint(&fingerPrint);
 
 #define indFinger 7
 #define buzzer 5
-
+#define match 5
 #define records 10 // 10 for 10 user
 
 int user1, user2, user3, user4, user5, user6, user7, user8, user9, user10;
@@ -29,6 +29,7 @@ int ledPin = 13;
 void setup() {
   Serial.begin(9600);
   finger.begin(57600);
+
   rtc.begin();
 
   pinMode(ledPin, OUTPUT);    
@@ -39,40 +40,36 @@ void setup() {
 
   pinMode(buzzer, OUTPUT);
   pinMode(indFinger, OUTPUT);
+  
+  Serial.println("Purpose Built Fingerprint Scanner");
+  Serial.println("Initializig your module .....");
+  Serial.println("Finding module");
+  
+  for(int i=1000;i<1000 + records;i++)
+  {
+    if(EEPROM.read(i) == 0xff) EEPROM.write(i,0);
+  }
+
+  if (finger.verifyPassword())
+  {
+    Serial.println("Found fingerprint sensor!");
+    delay(1000);
+  } else {
+    Serial.println("Did not find fingerprint sensor :(");
+    while (1);
+  }
 
   if (rtc.lostPower()) {
     Serial.println("RTC is NOT running!");
     rtc.adjust(DateTime(2018, 6, 7, 11, 0, 0));
   }
-}
 
-void loop() {
-  now = rtc.now();
-
-  // Read the state of the button
-  int buttonStateRegisterBack = digitalRead(buttonRegisterBack);
-  int buttonStateDeleteOK = digitalRead(buttonDeleteOK);
-
-  if (digitalRead(buttonRegisterBack) == LOW) {
-
-    donwloadExistingData();
-    delay(1000);
-    enrollData();
-
-    Serial.println("buttonStateRegisterBack is pressed");
-  }
-
-  if (digitalRead(buttonDeleteOK) == LOW) {
-
-    resettingExistingData();
-    delay(1000);
-
-    Serial.println("buttonStateDeleteOK is pressed");
-  }
-
-  for (int i = 1000; i < 1000 + records; i++) {
-    if (EEPROM.read(i) == 0xff) EEPROM.write(i, 0);
-  }
+  user1=EEPROM.read(1000);
+  user2=EEPROM.read(1001);
+  user3=EEPROM.read(1002);
+  user4=EEPROM.read(1003);
+  user5=EEPROM.read(1004);
+  digitalWrite(indFinger, HIGH);
 }
 
 void donwloadExistingData()
@@ -160,19 +157,23 @@ void displayMessage(String message)
 
 int getFingerprintIDez() {
   uint8_t p = finger.getImage();
-
-  if (p != FINGERPRINT_OK)
-    return -1;
-
+ 
+  if (p != FINGERPRINT_OK) return -1;
+ 
   p = finger.image2Tz();
-  if (p != FINGERPRINT_OK)
-    return -1;
-
+  if (p != FINGERPRINT_OK) return -1;
+ 
   p = finger.fingerFastSearch();
   if (p != FINGERPRINT_OK) {
+    Serial.println("Finger Not Found");
+    Serial.println("Try Later");
+    delay(1000);
     return -1;
   }
-
+  
+  // found a match!
+  Serial.print("Found ID #");
+  Serial.print(finger.fingerID);
   return finger.fingerID;
 }
 
@@ -221,7 +222,7 @@ void enrollData() {
       Serial.println('User Id: ' + String(count));
       if (count > records) count = 1;
       delay(500);
-      
+
     } else if (digitalRead(buttonReverse) == LOW) {
 
       count--;
@@ -313,68 +314,157 @@ void attendance(int id) {
 uint8_t getFingerprintEnroll() {
   int p = -1;
 
+  Serial.println("User id:");
+  Serial.print(id);
+  delay(1000);
+
+  Serial.println("Place Finger");
+  delay(1000);
+
   while (p != FINGERPRINT_OK) {
     p = finger.getImage();
 
     switch (p) {
       case FINGERPRINT_OK:
+        Serial.println("Image taken");
         break;
       case FINGERPRINT_NOFINGER:
+        Serial.println("No Finger");
         break;
       case FINGERPRINT_PACKETRECIEVEERR:
+        Serial.println("Communication error");
         break;
       case FINGERPRINT_IMAGEFAIL:
+        Serial.println("Imaging error");
         break;
       default:
+        Serial.println("Unknown error");
         break;
     }
   }
 
   p = finger.image2Tz(1);
-
   switch (p) {
     case FINGERPRINT_OK:
+      Serial.println("Image converted");
       break;
     case FINGERPRINT_IMAGEMESS:
+      Serial.println("Image too messy");
       return p;
     case FINGERPRINT_PACKETRECIEVEERR:
+      Serial.println("Communication error");
       return p;
     case FINGERPRINT_FEATUREFAIL:
+      Serial.println("Could not find fingerprint features");
       return p;
     case FINGERPRINT_INVALIDIMAGE:
+      Serial.println("Could not find fingerprint features");
       return p;
     default:
+      Serial.println("Unknown error");
       return p;
   }
 
+  Serial.println("Remove finger");
+  delay(1000);
+
+  p = 0;
+
   while (p != FINGERPRINT_NOFINGER) {
     p = finger.getImage();
+  }
+
+  Serial.println("ID: "); 
+  Serial.print(id);
+  Serial.println("Place same finger again");
+  p = -1;
+  while (p != FINGERPRINT_OK) {
+    p = finger.getImage();
+
+    switch (p) {
+      case FINGERPRINT_OK:
+        Serial.println("Image taken");
+        break;
+      case FINGERPRINT_NOFINGER:
+        Serial.println("No Finger");
+        break;
+      case FINGERPRINT_PACKETRECIEVEERR:
+        Serial.println("Communication error");
+        break;
+      case FINGERPRINT_IMAGEFAIL:
+        Serial.println("Imaging error");
+        break;
+      default:
+        Serial.println("Unknown error");
+        break;
+    }
   }
 
   p = finger.image2Tz(2);
 
   switch (p) {
     case FINGERPRINT_OK:
+      Serial.println("Image converted");
       break;
     case FINGERPRINT_IMAGEMESS:
+      Serial.println("Image too messy");
       return p;
     case FINGERPRINT_PACKETRECIEVEERR:
+      Serial.println("Communication error");
       return p;
     case FINGERPRINT_FEATUREFAIL:
+      Serial.println("Could not find fingerprint features");
       return p;
     case FINGERPRINT_INVALIDIMAGE:
+      Serial.println("Could not find fingerprint features");
       return p;
     default:
+      Serial.println("Unknown error");
       return p;
   }
 
+  Serial.println("Creating model for #"); 
+  Serial.print(id);
+
   p = finger.createModel();
-  if (p != FINGERPRINT_OK) {
+  if (p == FINGERPRINT_OK) {
+
+    Serial.println("Prints matched!");
+
+  } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
+
+    Serial.println("Communication error");
+    return p;
+
+  } else if (p == FINGERPRINT_ENROLLMISMATCH) {
+
+    Serial.println("Fingerprints did not match");
+    return p;
+
+  } else {
+
+    Serial.println("Unknown error");
     return p;
   }
 
+  Serial.println("ID: "); 
+  Serial.print(id);
+
   p = finger.storeModel(id);
-  if (p != FINGERPRINT_OK) {
+  if (p == FINGERPRINT_OK) {
+    Serial.println("Stored!");
+    delay(1000);
+  } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
+    Serial.println("Communication error");
+    return p;
+  } else if (p == FINGERPRINT_BADLOCATION) {
+    Serial.println("Could not store in that location");
+    return p;
+  } else if (p == FINGERPRINT_FLASHERR) {
+    Serial.println("Error writing to flash");
+    return p;
+  } else {
+    Serial.println("Unknown error");
     return p;
   }
 }
@@ -382,9 +472,67 @@ uint8_t getFingerprintEnroll() {
 uint8_t deleteFingerprint(uint8_t id) {
   uint8_t p = -1;
 
+  Serial.println("Please wait");
+
   p = finger.deleteModel(id);
   if (p == FINGERPRINT_OK) {
+    Serial.println("Deleted!");
+    Serial.print("Successfully");
+    delay(1000);
+  } else {
+    Serial.println("Something Wrong");
+    Serial.println("Try Again Later");
+    delay(2000);
     return p;
   }
-  return p;
+}
+
+void checkKeys() {
+
+  // Read the state of the button
+  int buttonStateRegisterBack = digitalRead(buttonRegisterBack);
+  int buttonStateDeleteOK = digitalRead(buttonDeleteOK);
+
+  if (digitalRead(buttonRegisterBack) == LOW) {
+
+    donwloadExistingData();
+    delay(1000);
+    enrollData();
+
+    Serial.println("buttonStateRegisterBack is pressed");
+  }
+
+  if (digitalRead(buttonDeleteOK) == LOW) {
+
+    resettingExistingData();
+    delay(1000);
+
+    Serial.println("buttonStateDeleteOK is pressed");
+  }
+}
+
+void loop() {
+  now = rtc.now();
+  int result = getFingerprintIDez();
+  
+  if(result > 0) {
+    digitalWrite(indFinger, LOW);
+
+    buzzerSound();
+
+    delay(1000);
+    attendance(result);
+
+    Serial.println("Attendance");
+    Serial.println("Registered");
+    digitalWrite(indFinger, HIGH);
+    return;
+  } else {
+    checkKeys();
+    delay(1000);
+  }
+
+  for (int i = 1000; i < 1000 + records; i++) {
+    if (EEPROM.read(i) == 0xff) EEPROM.write(i, 0);
+  }
 }
