@@ -531,8 +531,9 @@ void loop() {
   now = rtc.now();
   int result = getFingerprintIDez();
   
-  if (digitalRead(buttonRoom1) == LOW) {
-    if(result > 0) {
+  if(result > 0) {
+
+    if (digitalRead(buttonRoom1) == LOW) {
       digitalWrite(indFinger, LOW);
       buzzerSound();
       attendance(result);
@@ -543,14 +544,9 @@ void loop() {
 
       digitalWrite(indFinger, HIGH);
       return;
-    } else {
-      checkKeys();
-      delay(1000);
     }
-  }
 
-  if (digitalRead(buttonRoom2) == LOW) {
-    if(result > 0) {
+    if (digitalRead(buttonRoom2) == LOW) {
       digitalWrite(indFinger, LOW);
       buzzerSound();
       attendance(result);
@@ -561,14 +557,9 @@ void loop() {
 
       digitalWrite(indFinger, HIGH);
       return;
-    } else {
-      checkKeys();
-      delay(1000);
     }
-  }
 
-  if (digitalRead(buttonRoom3) == LOW) {
-    if(result > 0) {
+    if (digitalRead(buttonRoom3) == LOW) {
       digitalWrite(indFinger, LOW);
       buzzerSound();
       attendance(result);
@@ -579,14 +570,9 @@ void loop() {
 
       digitalWrite(indFinger, HIGH);
       return;
-    } else {
-      checkKeys();
-      delay(1000);
     }
-  }
 
-  if (digitalRead(buttonRoom4) == LOW) {
-    if(result > 0) {
+    if (digitalRead(buttonRoom4) == LOW) {
       digitalWrite(indFinger, LOW);
       buzzerSound();
       attendance(result);
@@ -597,14 +583,9 @@ void loop() {
 
       digitalWrite(indFinger, HIGH);
       return;
-    } else {
-      checkKeys();
-      delay(1000);
     }
-  }
 
-  if (digitalRead(buttonRoom5) == LOW) {
-    if(result > 0) {
+    if (digitalRead(buttonRoom5) == LOW) {
       digitalWrite(indFinger, LOW);
       buzzerSound();
       attendance(result);
@@ -615,12 +596,12 @@ void loop() {
 
       digitalWrite(indFinger, HIGH);
       return;
-    } else {
-      checkKeys();
-      delay(1000);
     }
+    
+  } else {
+    checkKeys();
+    delay(1000);
   }
-
   for (int i = 1000; i < 1000 + records; i++) {
     if (EEPROM.read(i) == 0xff) EEPROM.write(i, 0);
   }
