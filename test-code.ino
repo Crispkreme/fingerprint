@@ -532,14 +532,13 @@ void loop() {
   int result = getFingerprintIDez();
   
   if(result > 0) {
-  
+    
+    digitalWrite(indFinger, LOW);
+
     if (digitalRead(buttonRoom1) == LOW) {
 
-      digitalWrite(indFinger, LOW);
       buzzerSound();
       attendance(result);
-      digitalWrite(indFinger, HIGH);
-      return;
       
       Serial.println("user id: " + String(result));
       Serial.println("purpose: Room 1");
@@ -547,11 +546,9 @@ void loop() {
     }
 
     if (digitalRead(buttonRoom2) == LOW) {
-      digitalWrite(indFinger, LOW);
+
       buzzerSound();
       attendance(result);
-      digitalWrite(indFinger, HIGH);
-      return;
       
       Serial.println("user id: " + String(result));
       Serial.println("purpose: Room 2");
@@ -559,11 +556,9 @@ void loop() {
     }
 
     if (digitalRead(buttonRoom3) == LOW) {
-      digitalWrite(indFinger, LOW);
+
       buzzerSound();
       attendance(result);
-      digitalWrite(indFinger, HIGH);
-      return;
       
       Serial.println("user id: " + String(result));
       Serial.println("purpose: Room 3");
@@ -571,11 +566,9 @@ void loop() {
     }
 
     if (digitalRead(buttonRoom4) == LOW) {
-      digitalWrite(indFinger, LOW);
+
       buzzerSound();
       attendance(result);
-      digitalWrite(indFinger, HIGH);
-      return;
       
       Serial.println("user id: " + String(result));
       Serial.println("purpose: Room 4");
@@ -583,17 +576,18 @@ void loop() {
     }
 
     if (digitalRead(buttonRoom5) == LOW) {
-      digitalWrite(indFinger, LOW);
+
       buzzerSound();
       attendance(result);
-      digitalWrite(indFinger, HIGH);
-      return;
       
       Serial.println("user id: " + String(result));
       Serial.println("purpose: Room 5");
       Serial.println("date: April 28, 2024");
     }
     
+    digitalWrite(indFinger, HIGH);
+    return;
+
   } else {
     checkKeys();
     delay(1000);
