@@ -3,6 +3,10 @@
 #include <SoftwareSerial.h>
 #include <Wire.h>
 #include "RTClib.h"
+#include <SPI.h>
+#include <SD.h>
+
+File myFile;
 RTC_DS3231 rtc;
 
 uint8_t id;
@@ -33,13 +37,12 @@ const int buttonForward = A1;
 const int buttonReverse = A2; 
 const int buttonDeleteOK = A3; 
 
-const int buttonRoom1 = 7; 
-const int buttonRoom2 = 8; 
-const int buttonRoom3 = 9; 
-const int buttonRoom4 = 10; 
-const int buttonRoom5 = 11; 
-
-int ledPin = 13;  
+const int buttonRoom1 = 4; 
+const int buttonRoom2 = 6;
+const int buttonRoom3 = 7; 
+const int buttonRoom4 = 8; 
+const int buttonRoom5 = 9; 
+const int chipSelect = 10;
 
 void setup() {
   Serial.begin(9600);
@@ -47,8 +50,10 @@ void setup() {
 
   rtc.begin();
 
-  pinMode(ledPin, OUTPUT);    
-
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for Leonardo only
+  }
+   
   pinMode(buttonRegisterBack, INPUT_PULLUP);
   pinMode(buttonForward, INPUT_PULLUP);
   pinMode(buttonReverse, INPUT_PULLUP);
@@ -93,6 +98,35 @@ void setup() {
   user5=EEPROM.read(1004);
 
   digitalWrite(indFinger, HIGH);
+
+  Serial.print("Initializing SD card...");
+
+  if (!SD.begin()) {
+    Serial.println("initialization failed!");
+    return;
+  }
+  
+  Serial.println("initialization done.");
+  myFile = SD.open("test.txt", FILE_WRITE);
+  if (myFile) {
+    Serial.print("Writing to test.txt...");
+    myFile.println("testing 1, 2, 3.");
+    myFile.close();
+    Serial.println("done.");
+  } else {
+    Serial.println("error opening test.txt");
+  }
+
+  myFile = SD.open("test.txt");
+  if (myFile) {
+    Serial.println("test.txt:");
+    while (myFile.available()) {
+      Serial.write(myFile.read());
+    }
+    myFile.close();
+  } else {
+    Serial.println("error opening test.txt");
+  }
 }
 
 void donwloadExistingData()
