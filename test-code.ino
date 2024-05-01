@@ -18,6 +18,20 @@ Adafruit_Fingerprint finger = Adafruit_Fingerprint(&fingerPrint);
 #define match 5
 #define records 10 // 10 for 10 user
 
+// RED LEDS
+#define REDLED1 42
+#define REDLED2 36
+#define REDLED3 34
+#define REDLED4 30
+#define REDLED5 26
+
+// GREEN LEDS
+#define GREENLED1 40
+#define GREENLED2 38
+#define GREENLED3 32
+#define GREENLED4 28
+#define GREENLED5 24
+
 int user1, 
     user2, 
     user3, 
@@ -37,11 +51,12 @@ const int buttonForward = A1;
 const int buttonReverse = A2; 
 const int buttonDeleteOK = A3; 
 
-const int buttonRoom1 = 4; 
-const int buttonRoom2 = 6;
-const int buttonRoom3 = 7; 
-const int buttonRoom4 = 8; 
-const int buttonRoom5 = 9; 
+const int buttonRoom1 = A4; 
+const int buttonRoom2 = A5;
+const int buttonRoom3 = A6; 
+const int buttonRoom4 = A7; 
+const int buttonRoom5 = A8; 
+
 const int chipSelect = 10;
 
 void setup() {
@@ -64,6 +79,18 @@ void setup() {
   pinMode(buttonRoom3, INPUT_PULLUP);
   pinMode(buttonRoom4, INPUT_PULLUP);
   pinMode(buttonRoom5, INPUT_PULLUP);
+
+  pinMode(REDLED1, OUTPUT);
+  pinMode(REDLED2, OUTPUT);
+  pinMode(REDLED3, OUTPUT);
+  pinMode(REDLED4, OUTPUT);
+  pinMode(REDLED5, OUTPUT);
+
+  pinMode(GREENLED1, OUTPUT);
+  pinMode(GREENLED2, OUTPUT);
+  pinMode(GREENLED3, OUTPUT);
+  pinMode(GREENLED4, OUTPUT);
+  pinMode(GREENLED5, OUTPUT);
 
   pinMode(buzzer, OUTPUT);
   pinMode(indFinger, OUTPUT);
