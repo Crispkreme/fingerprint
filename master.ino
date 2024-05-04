@@ -2,8 +2,11 @@
 #include <EEPROM.h> 
 #include <SoftwareSerial.h>
 #include <Wire.h>
-#include "RTClib.h"
-RTC_DS3231 rtc;
+#include <ThreeWire.h>  
+#include <RtcDS1302.h>
+
+ThreeWire myWire(4,13,12); // IO, SCLK, CE
+RtcDS1302<ThreeWire> Rtc(myWire);
 
 uint8_t id;
 SoftwareSerial fingerPrint(2, 3);
@@ -13,6 +16,7 @@ Adafruit_Fingerprint finger = Adafruit_Fingerprint(&fingerPrint);
 #define buzzer 5
 #define match 5
 #define records 10 // 10 for 10 user
+#define countof(a) (sizeof(a) / sizeof(a[0]))
 
 int user1, user2, user3, user4, user5, user6, user7, user8, user9, user10;
 
@@ -39,7 +43,7 @@ void setup() {
   Serial.begin(9600);
   finger.begin(57600);
 
-  rtc.begin();
+  Rtc.Begin();
 
   pinMode(ledPin, OUTPUT);    
 
@@ -75,9 +79,29 @@ void setup() {
     while (1);
   }
 
-  if (rtc.lostPower()) {
-    Serial.println("RTC is NOT running!");
-    rtc.adjust(DateTime(2018, 6, 7, 11, 0, 0));
+  if (!Rtc.IsDateTimeValid()) {
+    Serial.println("RTC lost confidence in the DateTime!");
+    Rtc.SetDateTime(compiled);
+  }
+
+  if (Rtc.GetIsWriteProtected()) {
+    Serial.println("RTC was write protected, enabling writing now");
+    Rtc.SetIsWriteProtected(false);
+  }
+
+  if (!Rtc.GetIsRunning()) {
+    Serial.println("RTC was not actively running, starting now");
+    Rtc.SetIsRunning(true);
+  }
+
+  RtcDateTime now = Rtc.GetDateTime();
+  if (now < compiled) {
+    Serial.println("RTC is older than compile time!  (Updating DateTime)");
+    Rtc.SetDateTime(compiled);
+  } else if (now > compiled) {
+    Serial.println("RTC is newer than compile time. (this is expected)");
+  } else if (now == compiled) {
+    Serial.println("RTC is the same as compile time! (not expected but all is fine)");
   }
 
   user1=EEPROM.read(1000);
@@ -501,11 +525,35 @@ uint8_t deleteFingerprint(uint8_t id) {
   }
 }
 
+void printDateTime(const RtcDateTime& dt)
+{
+  char datestring[20];
+
+  snprintf_P(datestring, 
+  countof(datestring),
+  PSTR("%02u/%02u/%04u %02u:%02u:%02u"),
+  dt.Month(),
+  dt.Day(),
+  dt.Year(),
+  dt.Hour(),
+  dt.Minute(),
+  dt.Second() );
+  Serial.print(datestring);
+}
+
 void loop() {
-  now = rtc.now();
+  RtcDateTime now = Rtc.GetDateTime();
   int result = getFingerprintIDez();
   
-  
+  printDateTime(now);
+
+  if (!now.IsValid())
+  {
+    // Common Causes:
+    //    1) the battery on the device is low or even missing and the power line was disconnected
+    Serial.println("RTC lost confidence in the DateTime!");
+  }
+
   if (digitalRead(buttonRegisterBack) == LOW) {
 
     donwloadExistingData();
