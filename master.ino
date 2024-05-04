@@ -20,6 +20,8 @@ Adafruit_Fingerprint finger = Adafruit_Fingerprint(&fingerPrint);
 
 int user1, user2, user3, user4, user5, user6, user7, user8, user9, user10;
 
+DateTime now;
+
 // Define variables
 const int buttonRegisterBack = A0; 
 const int buttonForward = A1; 
@@ -77,8 +79,33 @@ void setup() {
     while (1);
   }
 
+  RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
+  printDateTime(compiled);
+
+  if (!Rtc.IsDateTimeValid()) {
+    Serial.println("RTC lost confidence in the DateTime!");
+    Rtc.SetDateTime(compiled);
+  }
+
+  if (Rtc.GetIsWriteProtected()) {
+    Serial.println("RTC was write protected, enabling writing now");
+    Rtc.SetIsWriteProtected(false);
+  }
+
+  if (!Rtc.GetIsRunning()) {
+    Serial.println("RTC was not actively running, starting now");
+    Rtc.SetIsRunning(true);
+  }
+
   RtcDateTime now = Rtc.GetDateTime();
-  Serial.println("Date and Time :" + String(now));
+  if (now < compiled) {
+    Serial.println("RTC is older than compile time!  (Updating DateTime)");
+    Rtc.SetDateTime(compiled);
+  } else if (now > compiled) {
+    Serial.println("RTC is newer than compile time. (this is expected)");
+  } else if (now == compiled) {
+    Serial.println("RTC is the same as compile time! (not expected but all is fine)");
+  }
 
   user1=EEPROM.read(1000);
   user2=EEPROM.read(1001);
@@ -515,6 +542,7 @@ void printDateTime(const RtcDateTime& dt)
   dt.Hour(),
   dt.Minute(),
   dt.Second() );
+  Serial.print("Date and Time: ");
   Serial.print(datestring);
 }
 
