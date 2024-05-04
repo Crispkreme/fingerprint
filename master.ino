@@ -2,15 +2,12 @@
 #include <EEPROM.h> 
 #include <SoftwareSerial.h>
 #include <Wire.h>
-#include <ThreeWire.h>  
-#include <RtcDS1302.h>
-
-ThreeWire myWire(4,13,12); // IO, SCLK, CE
-RtcDS1302<ThreeWire> Rtc(myWire);
+#include <RTC.h>
 
 uint8_t id;
 SoftwareSerial fingerPrint(2, 3);
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&fingerPrint);
+RTC_DS1302 rtc;
 
 #define indFinger 7
 #define buzzer 5
@@ -41,7 +38,7 @@ void setup() {
   Serial.begin(9600);
   finger.begin(57600);
 
-  Rtc.Begin();
+  RtcDateTime now = rtc.now();
 
   pinMode(ledPin, OUTPUT);    
 
