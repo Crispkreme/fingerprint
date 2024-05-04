@@ -505,6 +505,7 @@ void loop() {
   now = rtc.now();
   int result = getFingerprintIDez();
   
+  
   if (digitalRead(buttonRegisterBack) == LOW) {
 
     donwloadExistingData();
@@ -527,15 +528,9 @@ void loop() {
         buzzerSound();
         attendance(result);
 
-        Serial.println("user id: " + String(result));
-        Serial.println("purpose: " + roomNames[i]);
-        Serial.println("date: April 28, 2024");
-
-        char mystr1[1] = String(result);
-        char mystr2[6] = roomNames[i];
-
-        Serial.write(mystr1, 1); 
-        Serial.write(mystr2, 6); 
+        Serial.println("[MASTER] user id: " + String(result));
+        Serial.println("[MASTER] purpose: " + roomNames[i]);
+        Serial.println("[MASTER] date: April 28, 2024");
 
         digitalWrite(indFinger, HIGH);
         return;
@@ -547,3 +542,4 @@ void loop() {
     if (EEPROM.read(i) == 0xff) EEPROM.write(i, 0);
   }
 }
+
