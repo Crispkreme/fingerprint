@@ -32,7 +32,7 @@ const int buttonRoom4 = 10;
 const int buttonRoom5 = 11; 
 
 const int buttonPins[] = {buttonRoom1, buttonRoom2, buttonRoom3, buttonRoom4, buttonRoom5};
-const String roomNames[] = {"Room 1", "Room 2", "Room 3", "Room 4", "Room 5"};
+const String roomNames[] = {"SCHOOL", "CENTRO", "HOME", "CHURCH", "STORE"};
 
 int ledPin = 13;  
 
