@@ -77,34 +77,6 @@ void setup() {
     while (1);
   }
 
-  RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
-  printDateTime(compiled);
-
-  if (!Rtc.IsDateTimeValid()) {
-    Serial.println("RTC lost confidence in the DateTime!");
-    Rtc.SetDateTime(compiled);
-  }
-
-  if (Rtc.GetIsWriteProtected()) {
-    Serial.println("RTC was write protected, enabling writing now");
-    Rtc.SetIsWriteProtected(false);
-  }
-
-  if (!Rtc.GetIsRunning()) {
-    Serial.println("RTC was not actively running, starting now");
-    Rtc.SetIsRunning(true);
-  }
-
-  RtcDateTime now = Rtc.GetDateTime();
-  if (now < compiled) {
-    Serial.println("RTC is older than compile time!  (Updating DateTime)");
-    Rtc.SetDateTime(compiled);
-  } else if (now > compiled) {
-    Serial.println("RTC is newer than compile time. (this is expected)");
-  } else if (now == compiled) {
-    Serial.println("RTC is the same as compile time! (not expected but all is fine)");
-  }
-
   user1=EEPROM.read(1000);
   user2=EEPROM.read(1001);
   user3=EEPROM.read(1002);
@@ -547,8 +519,6 @@ void printDateTime(const RtcDateTime& dt)
 void loop() {
   RtcDateTime now = Rtc.GetDateTime();
   int result = getFingerprintIDez();
-  
-  printDateTime(now);
 
   if (!now.IsValid())
   {
@@ -581,7 +551,7 @@ void loop() {
 
         Serial.println("[MASTER] user id: " + String(result));
         Serial.println("[MASTER] purpose: " + roomNames[i]);
-        Serial.println("[MASTER] date: April 28, 2024");
+        Serial.println("[MASTER] date: " + printDateTime(now));
 
         digitalWrite(indFinger, HIGH);
         return;
