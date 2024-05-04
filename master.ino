@@ -499,52 +499,24 @@ uint8_t deleteFingerprint(uint8_t id) {
   }
 }
 
-String getDateTimeString(const RtcDateTime& dt)
-{
-  char datestring[20];
-
-  snprintf_P(datestring, 
-  countof(datestring),
-  PSTR("%02u/%02u/%04u %02u:%02u:%02u"),
-  dt.Month(),
-  dt.Day(),
-  dt.Year(),
-  dt.Hour(),
-  dt.Minute(),
-  dt.Second() );
-
-  return String(datestring);
-}
-
 void loop() {
-  RtcDateTime now = Rtc.GetDateTime();
+  RtcDateTime now = rtc.now();
   int result = getFingerprintIDez();
 
-  if (!now.IsValid())
-  {
-    // Common Causes:
-    //    1) the battery on the device is low or even missing and the power line was disconnected
-    Serial.println("RTC lost confidence in the DateTime!");
-  }
-
   if (digitalRead(buttonRegisterBack) == LOW) {
-
     donwloadExistingData();
     delay(1000);
     enrollData();
   }
 
   if (digitalRead(buttonDeleteOK) == LOW) {
-
     resettingExistingData();
     delay(1000);
   }
 
   for (int i = 0; i < sizeof(buttonPins) / sizeof(buttonPins[0]); i++) {
     if (digitalRead(buttonPins[i]) == LOW) {
-
       if (result > 0) {
-
         digitalWrite(indFinger, LOW);
         buzzerSound();
         attendance(result);
@@ -552,7 +524,7 @@ void loop() {
         Serial.println("[MASTER] user id: " + String(result));
         Serial.println("[MASTER] purpose: " + roomNames[i]);
         Serial.print("[MASTER] date: ");
-        Serial.println(getDateTimeString(now));
+        Serial.println(now.format("%m/%d/%Y %H:%M:%S"));
 
         digitalWrite(indFinger, HIGH);
         return;
