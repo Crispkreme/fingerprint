@@ -30,6 +30,9 @@ const int buttonRoom3 = 9;
 const int buttonRoom4 = 10; 
 const int buttonRoom5 = 11; 
 
+const int buttonPins[] = {buttonRoom1, buttonRoom2, buttonRoom3, buttonRoom4, buttonRoom5};
+const String roomNames[] = {"Room 1", "Room 2", "Room 3", "Room 4", "Room 5"};
+
 int ledPin = 13;  
 
 void setup() {
@@ -507,133 +510,29 @@ void loop() {
     donwloadExistingData();
     delay(1000);
     enrollData();
-
-    Serial.println("buttonStateRegisterBack is pressed");
   }
 
   if (digitalRead(buttonDeleteOK) == LOW) {
 
     resettingExistingData();
     delay(1000);
-
-    Serial.println("buttonStateDeleteOK is pressed");
   }
 
-  if (digitalRead(buttonRoom1) == LOW) {
+  for (int i = 0; i < sizeof(buttonPins) / sizeof(buttonPins[0]); i++) {
+    if (digitalRead(buttonPins[i]) == LOW) {
+      if (result > 0) {
+        digitalWrite(indFinger, LOW);
+        buzzerSound();
+        attendance(result);
 
-    if(result > 0) {
+        Serial.println("user id: " + String(result));
+        Serial.println("purpose: " + roomNames[i]);
+        Serial.println("date: April 28, 2024");
 
-      char mystr1[1] = "1"; 
-      char mystr2[6] = "Room 1";
-
-      digitalWrite(indFinger, LOW);
-      buzzerSound();
-      attendance(result);
-
-      Serial.println("user id: " + String(result));
-      Serial.println("purpose: Room 1");
-      Serial.println("date: April 28, 2024");
-
-      Serial.write(mystr1, 1);  
-      Serial.write(mystr2, 6); 
-
-      digitalWrite(indFinger, HIGH);
-      return;
-    } 
-  }
-
-  if (digitalRead(buttonRoom2) == LOW) {
-
-    if(result > 0) {
-
-      char mystr1[1] = "1"; 
-      char mystr2[6] = "Room 2"; 
-
-      digitalWrite(indFinger, LOW);
-      buzzerSound();
-      attendance(result);
-
-      Serial.println("user id: " + String(result));
-      Serial.println("purpose: Room 2");
-      Serial.println("date: April 28, 2024");
-
-      Serial.write(mystr1, 1);  
-      Serial.write(mystr2, 6);  
-
-      digitalWrite(indFinger, HIGH);
-      return;
+        digitalWrite(indFinger, HIGH);
+        return;
+      }
     }
-  }
-
-  if (digitalRead(buttonRoom3) == LOW) {
-
-    if(result > 0) {
-
-      char mystr1[1] = "3"; 
-      char mystr2[6] = "Room 3";
-
-      digitalWrite(indFinger, LOW);
-      buzzerSound();
-      attendance(result);
-
-      Serial.println("user id: " + String(result));
-      Serial.println("purpose: Room 3");
-      Serial.println("date: April 28, 2024");
-      
-      Serial.write(mystr1, 1);  
-      Serial.write(mystr2, 6); 
-
-      digitalWrite(indFinger, HIGH);
-      return;
-
-    } 
-  }
-
-  if (digitalRead(buttonRoom4) == LOW) {
-
-    if(result > 0) {
-
-      char mystr1[1] = "4"; 
-      char mystr2[6] = "Room 4";
-
-      digitalWrite(indFinger, LOW);
-      buzzerSound();
-      attendance(result);
-
-      Serial.println("user id: " + String(result));
-      Serial.println("purpose: Room 4");
-      Serial.println("date: April 28, 2024");
-
-      Serial.write(mystr1, 1);  
-      Serial.write(mystr2, 6); 
-
-      digitalWrite(indFinger, HIGH);
-      return;
-
-    } 
-  }
-
-  if (digitalRead(buttonRoom5) == LOW) {
-
-    if(result > 0) {
-
-      char mystr1[1] = "5"; 
-      char mystr2[6] = "Room 5";
-
-      digitalWrite(indFinger, LOW);
-      buzzerSound();
-      attendance(result);
-
-      Serial.println("user id: " + String(result));
-      Serial.println("purpose: Room 5");
-      Serial.println("date: April 28, 2024");
-
-      Serial.write(mystr1, 1);  
-      Serial.write(mystr2, 6); 
-
-      digitalWrite(indFinger, HIGH);
-      return;
-    } 
   }
 
   for (int i = 1000; i < 1000 + records; i++) {
