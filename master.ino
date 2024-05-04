@@ -41,10 +41,7 @@ void setup() {
   finger.begin(57600);
 
   Rtc.Begin();
-  RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
-  printDateTime(compiled); 
-  Serial.println();
-
+  
   pinMode(ledPin, OUTPUT);    
 
   pinMode(buttonRegisterBack, INPUT_PULLUP);
@@ -520,8 +517,7 @@ void printDateTime(const RtcDateTime& dt){
 
 void loop() {
   int result = getFingerprintIDez();
-
-  RtcDateTime now = Rtc.GetDateTime();
+  RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
   
   if (!now.IsValid()){
     Serial.println("ERROR EN FECHA Y HORA");
@@ -548,7 +544,7 @@ void loop() {
         Serial.println("[MASTER] user id: " + String(result));
         Serial.println("[MASTER] purpose: " + roomNames[i]);
         Serial.print("[MASTER] date: ");
-        printDateTime(now);
+        printDateTime(compiled); 
         Serial.println();
 
         digitalWrite(indFinger, HIGH);
