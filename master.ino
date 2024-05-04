@@ -2,18 +2,20 @@
 #include <EEPROM.h> 
 #include <SoftwareSerial.h>
 #include <Wire.h>
-#include <RTC.h>
+#include <ThreeWire.h>  
+#include <RtcDS1302.h>
+
+ThreeWire myWire(4,13,12); // IO, SCLK, CE
+RtcDS1302<ThreeWire> Rtc(myWire);
 
 uint8_t id;
 SoftwareSerial fingerPrint(2, 3);
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&fingerPrint);
-RTC_DS1302 rtc;
 
 #define indFinger 7
 #define buzzer 5
 #define match 5
 #define records 10 // 10 for 10 user
-#define countof(a) (sizeof(a) / sizeof(a[0]))
 
 int user1, user2, user3, user4, user5, user6, user7, user8, user9, user10;
 
@@ -38,7 +40,10 @@ void setup() {
   Serial.begin(9600);
   finger.begin(57600);
 
-  RtcDateTime now = rtc.now();
+  Rtc.Begin();
+  RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
+  printDateTime(compiled); 
+  Serial.println();
 
   pinMode(ledPin, OUTPUT);    
 
@@ -496,10 +501,32 @@ uint8_t deleteFingerprint(uint8_t id) {
   }
 }
 
+#define countof(a) (sizeof(a) / sizeof(a[0]))
+
+void printDateTime(const RtcDateTime& dt){
+  char datestring[20];
+  snprintf_P(datestring, 
+    countof(datestring),
+    PSTR("%02u/%02u/%04u %02u:%02u:%02u"),
+    dt.Month(),
+    dt.Day(),
+    dt.Year(),
+    dt.Hour(),
+    dt.Minute(),
+    dt.Second() 
+  );
+  Serial.print(datestring);
+}
+
 void loop() {
-  RtcDateTime now = rtc.now();
   int result = getFingerprintIDez();
 
+  RtcDateTime now = Rtc.GetDateTime();
+  
+  if (!now.IsValid()){
+    Serial.println("ERROR EN FECHA Y HORA");
+  }
+  
   if (digitalRead(buttonRegisterBack) == LOW) {
     donwloadExistingData();
     delay(1000);
@@ -521,7 +548,8 @@ void loop() {
         Serial.println("[MASTER] user id: " + String(result));
         Serial.println("[MASTER] purpose: " + roomNames[i]);
         Serial.print("[MASTER] date: ");
-        Serial.println(now.format("%m/%d/%Y %H:%M:%S"));
+        printDateTime(now);
+        Serial.println();
 
         digitalWrite(indFinger, HIGH);
         return;
