@@ -520,7 +520,9 @@ void loop() {
 
   for (int i = 0; i < sizeof(buttonPins) / sizeof(buttonPins[0]); i++) {
     if (digitalRead(buttonPins[i]) == LOW) {
+
       if (result > 0) {
+
         digitalWrite(indFinger, LOW);
         buzzerSound();
         attendance(result);
@@ -528,6 +530,12 @@ void loop() {
         Serial.println("user id: " + String(result));
         Serial.println("purpose: " + roomNames[i]);
         Serial.println("date: April 28, 2024");
+
+        char mystr1[1] = String(result);
+        char mystr2[6] = roomNames[i];
+
+        Serial.write(mystr1, 1); 
+        Serial.write(mystr2, 6); 
 
         digitalWrite(indFinger, HIGH);
         return;
