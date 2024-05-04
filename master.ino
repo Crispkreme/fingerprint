@@ -20,8 +20,6 @@ Adafruit_Fingerprint finger = Adafruit_Fingerprint(&fingerPrint);
 
 int user1, user2, user3, user4, user5, user6, user7, user8, user9, user10;
 
-DateTime now;
-
 // Define variables
 const int buttonRegisterBack = A0; 
 const int buttonForward = A1; 
