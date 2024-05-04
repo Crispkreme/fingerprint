@@ -14,10 +14,7 @@ void writeToFile(String message) {
   myFile = SD.open("test.txt", FILE_WRITE);
 
   if (myFile) {
-    myFile.println("=========== SPELVA DATA ============");
-    myFile.println(String(datetimeString));
-    myFile.println("Voltage: " + String(acvoltage) + " V");
-    myFile.println("Current: " + String(ACcurrent) + " C");
+    myFile.println(String(message));
     myFile.println(" ");
     myFile.close();
     Serial.println("Data written to file.");
@@ -44,7 +41,7 @@ void loop() {
 
       Serial.println(message);
 
-      // writeToFile(message);
+      writeToFile(message);
     }
   }
 }
