@@ -521,19 +521,7 @@ void checkKeys() {
 void loop() {
   now = rtc.now();
   int result = getFingerprintIDez();
-
-  if (
-    digitalRead(buttonRoom1) == HIGH || 
-    digitalRead(buttonRoom2) == HIGH || 
-    digitalRead(buttonRoom3) == HIGH || 
-    digitalRead(buttonRoom4) == HIGH || 
-    digitalRead(buttonRoom5) == HIGH
-  )
-  {
-    checkKeys();
-    delay(1000);
-  } 
-
+  
   if (digitalRead(buttonRoom1) == LOW) {
 
     if(result > 0) {
@@ -554,8 +542,11 @@ void loop() {
 
       digitalWrite(indFinger, HIGH);
       return;
-    }
-  } 
+    } 
+  } else {
+    checkKeys();
+    delay(1000);
+  }
 
   if (digitalRead(buttonRoom2) == LOW) {
 
@@ -577,8 +568,11 @@ void loop() {
 
       digitalWrite(indFinger, HIGH);
       return;
-    } 
-  } 
+    }
+  } else {
+    checkKeys();
+    delay(1000);
+  }
 
   if (digitalRead(buttonRoom3) == LOW) {
 
@@ -602,7 +596,10 @@ void loop() {
       return;
 
     } 
-  } 
+  } else {
+    checkKeys();
+    delay(1000);
+  }
 
   if (digitalRead(buttonRoom4) == LOW) {
 
@@ -626,6 +623,9 @@ void loop() {
       return;
 
     } 
+  } else {
+    checkKeys();
+    delay(1000);
   }
 
   if (digitalRead(buttonRoom5) == LOW) {
@@ -648,7 +648,10 @@ void loop() {
 
       digitalWrite(indFinger, HIGH);
       return;
-    }
+    } 
+  } else {
+    checkKeys();
+    delay(1000);
   }
 
   for (int i = 1000; i < 1000 + records; i++) {
