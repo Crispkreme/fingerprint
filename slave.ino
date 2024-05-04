@@ -1,6 +1,3 @@
-char mystr1[10];
-char mystr2[10];
-
 void setup() {
   Serial.begin(9600);
 }
