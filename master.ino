@@ -499,7 +499,7 @@ uint8_t deleteFingerprint(uint8_t id) {
   }
 }
 
-void printDateTime(const RtcDateTime& dt)
+String getDateTimeString(const RtcDateTime& dt)
 {
   char datestring[20];
 
@@ -512,8 +512,8 @@ void printDateTime(const RtcDateTime& dt)
   dt.Hour(),
   dt.Minute(),
   dt.Second() );
-  Serial.print("Date and Time: ");
-  Serial.print(datestring);
+
+  return String(datestring);
 }
 
 void loop() {
@@ -551,7 +551,8 @@ void loop() {
 
         Serial.println("[MASTER] user id: " + String(result));
         Serial.println("[MASTER] purpose: " + roomNames[i]);
-        Serial.println("[MASTER] date: " + printDateTime(now));
+        Serial.print("[MASTER] date: ");
+        Serial.println(getDateTimeString(now));
 
         digitalWrite(indFinger, HIGH);
         return;
@@ -563,4 +564,3 @@ void loop() {
     if (EEPROM.read(i) == 0xff) EEPROM.write(i, 0);
   }
 }
-
