@@ -79,30 +79,8 @@ void setup() {
     while (1);
   }
 
-  if (!Rtc.IsDateTimeValid()) {
-    Serial.println("RTC lost confidence in the DateTime!");
-    Rtc.SetDateTime(compiled);
-  }
-
-  if (Rtc.GetIsWriteProtected()) {
-    Serial.println("RTC was write protected, enabling writing now");
-    Rtc.SetIsWriteProtected(false);
-  }
-
-  if (!Rtc.GetIsRunning()) {
-    Serial.println("RTC was not actively running, starting now");
-    Rtc.SetIsRunning(true);
-  }
-
   RtcDateTime now = Rtc.GetDateTime();
-  if (now < compiled) {
-    Serial.println("RTC is older than compile time!  (Updating DateTime)");
-    Rtc.SetDateTime(compiled);
-  } else if (now > compiled) {
-    Serial.println("RTC is newer than compile time. (this is expected)");
-  } else if (now == compiled) {
-    Serial.println("RTC is the same as compile time! (not expected but all is fine)");
-  }
+  Serial.println("Date and Time :" + String(now));
 
   user1=EEPROM.read(1000);
   user2=EEPROM.read(1001);
@@ -290,6 +268,7 @@ void enrollData() {
 
 void attendance(int id) {
   int user = 0, eepLoc = 0;
+  RtcDateTime now = Rtc.GetDateTime();
 
   switch (id) {
     case 1:
