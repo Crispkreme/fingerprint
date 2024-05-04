@@ -549,8 +549,8 @@ void loop() {
       Serial.println("purpose: Room 1");
       Serial.println("date: April 28, 2024");
 
-      Serial.println(mystr1, 1);  
-      Serial.println(mystr2, 6); 
+      Serial.write(mystr1, 1);  
+      Serial.write(mystr2, 6); 
 
       digitalWrite(indFinger, HIGH);
       return;
@@ -572,8 +572,8 @@ void loop() {
       Serial.println("purpose: Room 2");
       Serial.println("date: April 28, 2024");
 
-      Serial.println(mystr1, 1);  
-      Serial.println(mystr2, 6);  
+      Serial.write(mystr1, 1);  
+      Serial.write(mystr2, 6);  
 
       digitalWrite(indFinger, HIGH);
       return;
@@ -595,8 +595,8 @@ void loop() {
       Serial.println("purpose: Room 3");
       Serial.println("date: April 28, 2024");
       
-      Serial.println(mystr1, 1);  
-      Serial.println(mystr2, 6); 
+      Serial.write(mystr1, 1);  
+      Serial.write(mystr2, 6); 
 
       digitalWrite(indFinger, HIGH);
       return;
@@ -619,8 +619,8 @@ void loop() {
       Serial.println("purpose: Room 4");
       Serial.println("date: April 28, 2024");
 
-      Serial.println(mystr1, 1);  
-      Serial.println(mystr2, 6); 
+      Serial.write(mystr1, 1);  
+      Serial.write(mystr2, 6); 
 
       digitalWrite(indFinger, HIGH);
       return;
@@ -643,8 +643,8 @@ void loop() {
       Serial.println("purpose: Room 5");
       Serial.println("date: April 28, 2024");
 
-      Serial.println(mystr1, 1);  
-      Serial.println(mystr2, 6); 
+      Serial.write(mystr1, 1);  
+      Serial.write(mystr2, 6); 
 
       digitalWrite(indFinger, HIGH);
       return;
