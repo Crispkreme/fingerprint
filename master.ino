@@ -340,13 +340,13 @@ void attendance(int id) {
 
   int eepIndex = (user * 7) + eepLoc;
 
-  EEPROM.write(eepIndex++, now.hour());
-  EEPROM.write(eepIndex++, now.minute());
-  EEPROM.write(eepIndex++, now.second());
-  EEPROM.write(eepIndex++, now.day());
-  EEPROM.write(eepIndex++, now.month());
-  EEPROM.write(eepIndex++, now.year() >> 8 );
-  EEPROM.write(eepIndex++, now.year());
+  EEPROM.write(eepIndex++, now.Hour());
+  EEPROM.write(eepIndex++, now.Minute());
+  EEPROM.write(eepIndex++, now.Second());
+  EEPROM.write(eepIndex++, now.Day());
+  EEPROM.write(eepIndex++, now.Month());
+  EEPROM.write(eepIndex++, now.Year() >> 8 );
+  EEPROM.write(eepIndex++, now.Year());
 
   EEPROM.write(1000, user1);
   EEPROM.write(1001, user2);
