@@ -7,11 +7,11 @@ void setup() {
 
 void loop() {
 
-  Serial.readBytes(mystr1, 1);
-  Serial.println(mystr1); 
-
-  Serial.readBytes(mystr2, 6);
-  Serial.println(mystr2); 
-
-  delay(1000);
+  if (Serial.available()) {
+    String message = Serial.readStringUntil('\n');
+    if (message.startsWith("[MASTER]")) {
+      // Print only messages intended for the master
+      Serial.println(message);
+    }
+  }
 }
