@@ -519,10 +519,6 @@ void loop() {
   int result = getFingerprintIDez();
   RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
   
-  if (!now.IsValid()){
-    Serial.println("ERROR EN FECHA Y HORA");
-  }
-  
   if (digitalRead(buttonRegisterBack) == LOW) {
     donwloadExistingData();
     delay(1000);
