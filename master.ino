@@ -190,7 +190,7 @@ int getFingerprintIDez() {
   
   // found a match!
   Serial.print("Found ID #");
-  Serial.print(finger.fingerID);
+  Serial.println(finger.fingerID);
   return finger.fingerID;
 }
 
