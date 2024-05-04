@@ -17,7 +17,6 @@ void writeToFile(String message) {
     myFile.println(String(message));
     myFile.println(" ");
     myFile.close();
-    Serial.println("Data written to file.");
   } else {
     Serial.println("Error opening file");
   }
