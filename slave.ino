@@ -3,20 +3,15 @@
 #include <Wire.h>
 #include "HD44780_LCD_PCF8574.h"
 
-#define FILE_NAME "test.txt"
-#define SD_CS_PIN 4
-#define LCD_COLS 16
-#define LCD_ROWS 2
-#define LCD_ADDRESS 0x27
-#define DISPLAY_DELAY_1 500 // Adjust as needed
-
 File myFile;
-HD44780LCD myLCD(LCD_COLS, LCD_ROWS, LCD_ADDRESS, &Wire);
+HD44780LCD myLCD( 2, 16, 0x27, &Wire);
 
-void writeToFile(const char* message) {
-  myFile = SD.open(FILE_NAME, FILE_WRITE);
+void writeToFile(String message) {
+
+  myFile = SD.open("test.txt", FILE_WRITE);
+
   if (myFile) {
-    myFile.println(message);
+    myFile.println(String(message));
     myFile.close();
   } else {
     Serial.println("Error opening file");
@@ -24,11 +19,15 @@ void writeToFile(const char* message) {
 }
 
 void setup() {
+
   Serial.begin(9600);
-  while (!Serial);
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for native USB port only
+  }
 
   Serial.print("Initializing SD card...");
-  if (!SD.begin(SD_CS_PIN)) {
+
+  if (!SD.begin(4)) {
     Serial.println("Initialization failed!");
     while (true);
   }
