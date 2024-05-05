@@ -39,15 +39,6 @@ void setup() {
 
 void loop() {
 
-  char teststr1[] = "Hello";
-	char teststr2[] = "World";
-	myLCD.PCF8574_LCDGOTO(myLCD.LCDLineNumberOne, 0);
-	myLCD.PCF8574_LCDSendString(teststr1);
-	myLCD.PCF8574_LCDGOTO(myLCD.LCDLineNumberTwo , 0);
-	myLCD.PCF8574_LCDSendString(teststr2); // Display a string
-	myLCD.PCF8574_LCDSendChar('!'); // Display a single character
-	delay(DISPLAY_DELAY_1);
-  
   if (Serial.available()) {
 
     String message = Serial.readStringUntil('\n');
@@ -55,6 +46,32 @@ void loop() {
     if (message.startsWith("[MASTER]")) {
 
       Serial.println(message);
+
+      // Extract user id and purpose
+      String userId;
+      String purpose;
+      int idStart = message.indexOf("user id: ") + 9;
+      int idEnd = message.indexOf('\n', idStart);
+      if (idStart != -1 && idEnd != -1) {
+        userId = message.substring(idStart, idEnd);
+      }
+      int purposeStart = message.indexOf("purpose: ") + 9;
+      int purposeEnd = message.indexOf('\n', purposeStart);
+      if (purposeStart != -1 && purposeEnd != -1) {
+        purpose = message.substring(purposeStart, purposeEnd);
+      }
+
+      // Display user id and purpose on LCD
+      myLCD.PCF8574_LCDGOTO(0, 0);
+      myLCD.PCF8574_LCDSendString("User ID: ");
+      myLCD.PCF8574_LCDGOTO(0, 9);
+      myLCD.PCF8574_LCDSendString(userId.c_str());
+      myLCD.PCF8574_LCDGOTO(1, 0);
+      myLCD.PCF8574_LCDSendString("Purpose: ");
+      myLCD.PCF8574_LCDGOTO(1, 9);
+      myLCD.PCF8574_LCDSendString(purpose.c_str());
+
+      delay(DISPLAY_DELAY_1);
 
       writeToFile(message);
     }
