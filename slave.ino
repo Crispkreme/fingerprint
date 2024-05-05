@@ -25,7 +25,7 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
-  Serial.println("Initializing SD card...");
+  Serial.print("Initializing SD card...");
 
   if (!SD.begin(4)) {
     Serial.println("Initialization failed!");
@@ -71,6 +71,7 @@ void loop() {
       if (purposePos != -1) {
         purposePos += 9; 
         purpose = message.substring(purposePos);
+        purpose.trim();
       }
 
       myLCD.PCF8574_LCDGOTO(myLCD.LCDLineNumberOne, 0);
@@ -82,8 +83,6 @@ void loop() {
       myLCD.PCF8574_LCDSendString(purpose.c_str());
 
       delay(1000);
-
-      writeToFile(message);
     }
   }
 }
