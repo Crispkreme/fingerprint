@@ -25,7 +25,7 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
-  Serial.println("Initializing SD card...");
+  Serial.print("Initializing SD card...");
 
   if (!SD.begin(4)) {
     Serial.println("Initialization failed!");
@@ -40,41 +40,44 @@ void setup() {
 
 void loop() {
   if (Serial.available()) {
-    char message[128]; // Adjust size as per message length
-    Serial.readBytesUntil('\n', message, sizeof(message));
+    String message = Serial.readStringUntil('\n');
 
-    if (strncmp(message, "[MASTER]", 8) == 0) {
+    if (message.startsWith("[MASTER]")) {
       Serial.println(message);
 
       // Extract user id and purpose
-      char userId[64]; // Adjust size as per expected length
-      char purpose[64]; // Adjust size as per expected length
+      String userId;
+      String purpose;
 
-      char* idStart = strstr(message, "user id: ") + 9;
-      char* idEnd = strchr(idStart, '\n');
-      if (idStart != nullptr && idEnd != nullptr) {
-        strncpy(userId, idStart, idEnd - idStart);
-        userId[idEnd - idStart] = '\0'; // Null-terminate the string
+      int idPos = message.indexOf("user id: ");
+      if (idPos != -1) {
+        idPos += 9; // Move past "user id: "
+        int idEnd = message.indexOf('\n', idPos);
+        if (idEnd != -1) {
+          userId = message.substring(idPos, idEnd);
+        }
       }
 
-      char* purposeStart = strstr(message, "purpose: ") + 9;
-      char* purposeEnd = strchr(purposeStart, '\n');
-      if (purposeStart != nullptr && purposeEnd != nullptr) {
-        strncpy(purpose, purposeStart, purposeEnd - purposeStart);
-        purpose[purposeEnd - purposeStart] = '\0'; // Null-terminate the string
+      int purposePos = message.indexOf("purpose: ");
+      if (purposePos != -1) {
+        purposePos += 9; // Move past "purpose: "
+        int purposeEnd = message.indexOf('\n', purposePos);
+        if (purposeEnd != -1) {
+          purpose = message.substring(purposePos, purposeEnd);
+        }
       }
 
+      // Display on LCD
       myLCD.PCF8574_LCDGOTO(myLCD.LCDLineNumberOne, 0);
-      myLCD.PCF8574_LCDSendString("User ID: ");
-      myLCD.PCF8574_LCDSendString(userId);
+      myLCD.PCF8574_LCDSendString("User ID: " + userId);
       myLCD.PCF8574_LCDGOTO(myLCD.LCDLineNumberTwo , 0);
-      myLCD.PCF8574_LCDSendString("Purpose: ");
-      myLCD.PCF8574_LCDSendString(purpose);
+      myLCD.PCF8574_LCDSendString("Purpose: " + purpose);
       myLCD.PCF8574_LCDSendChar('!');
 
-      delay(DISPLAY_DELAY_1);
+      delay(1000);
 
-      writeToFile(message);
+      // Write to file
+      writeToFile(message.c_str());
     }
   }
 }
