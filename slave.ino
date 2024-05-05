@@ -3,15 +3,20 @@
 #include <Wire.h>
 #include "HD44780_LCD_PCF8574.h"
 
+#define FILE_NAME "test.txt"
+#define SD_CS_PIN 4
+#define LCD_COLS 16
+#define LCD_ROWS 2
+#define LCD_ADDRESS 0x27
+#define DISPLAY_DELAY_1 500 // Adjust as needed
+
 File myFile;
-HD44780LCD myLCD( 2, 16, 0x27, &Wire);
+HD44780LCD myLCD(LCD_COLS, LCD_ROWS, LCD_ADDRESS, &Wire);
 
-void writeToFile(String message) {
-
-  myFile = SD.open("test.txt", FILE_WRITE);
-
+void writeToFile(const char* message) {
+  myFile = SD.open(FILE_NAME, FILE_WRITE);
   if (myFile) {
-    myFile.println(String(message));
+    myFile.println(message);
     myFile.close();
   } else {
     Serial.println("Error opening file");
@@ -19,15 +24,11 @@ void writeToFile(String message) {
 }
 
 void setup() {
-
   Serial.begin(9600);
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
-  }
+  while (!Serial);
 
   Serial.print("Initializing SD card...");
-
-  if (!SD.begin(4)) {
+  if (!SD.begin(SD_CS_PIN)) {
     Serial.println("Initialization failed!");
     while (true);
   }
@@ -39,40 +40,38 @@ void setup() {
 }
 
 void loop() {
-
   if (Serial.available()) {
+    char message[128]; // Adjust size as per message length
+    Serial.readBytesUntil('\n', message, sizeof(message));
 
-    String message = Serial.readStringUntil('\n');
-
-    if (message.startsWith("[MASTER]")) {
-
+    if (strncmp(message, "[MASTER]", 8) == 0) {
       Serial.println(message);
 
       // Extract user id and purpose
-      String userId;
-      String purpose;
+      char userId[64]; // Adjust size as per expected length
+      char purpose[64]; // Adjust size as per expected length
 
-      int idStart = message.indexOf("user id: ") + 9;
-      int idEnd = message.indexOf('\n', idStart);
-      if (idStart != -1 && idEnd != -1) {
-        userId = message.substring(idStart, idEnd);
-      }
-      
-      int purposeStart = message.indexOf("purpose: ") + 9;
-      int purposeEnd = message.indexOf('\n', purposeStart);
-      if (purposeStart != -1 && purposeEnd != -1) {
-        purpose = message.substring(purposeStart, purposeEnd);
+      char* idStart = strstr(message, "user id: ") + 9;
+      char* idEnd = strchr(idStart, '\n');
+      if (idStart != nullptr && idEnd != nullptr) {
+        strncpy(userId, idStart, idEnd - idStart);
+        userId[idEnd - idStart] = '\0'; // Null-terminate the string
       }
 
-      // Display user id and purpose on LCD
-      myLCD.PCF8574_LCDGOTO(0, 0);
+      char* purposeStart = strstr(message, "purpose: ") + 9;
+      char* purposeEnd = strchr(purposeStart, '\n');
+      if (purposeStart != nullptr && purposeEnd != nullptr) {
+        strncpy(purpose, purposeStart, purposeEnd - purposeStart);
+        purpose[purposeEnd - purposeStart] = '\0'; // Null-terminate the string
+      }
+
+      myLCD.PCF8574_LCDGOTO(myLCD.LCDLineNumberOne, 0);
       myLCD.PCF8574_LCDSendString("User ID: ");
-      myLCD.PCF8574_LCDGOTO(0, 9);
-      myLCD.PCF8574_LCDSendString(userId.c_str());
-      myLCD.PCF8574_LCDGOTO(1, 0);
+      myLCD.PCF8574_LCDSendString(userId);
+      myLCD.PCF8574_LCDGOTO(myLCD.LCDLineNumberTwo , 0);
       myLCD.PCF8574_LCDSendString("Purpose: ");
-      myLCD.PCF8574_LCDGOTO(1, 9);
-      myLCD.PCF8574_LCDSendString(purpose.c_str());
+      myLCD.PCF8574_LCDSendString(purpose);
+      myLCD.PCF8574_LCDSendChar('!');
 
       delay(DISPLAY_DELAY_1);
 
