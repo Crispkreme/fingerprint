@@ -45,39 +45,45 @@ void loop() {
     if (message.startsWith("[MASTER]")) {
       Serial.println(message);
 
-      // Extract user id and purpose
       String userId;
       String purpose;
 
-      int idPos = message.indexOf("user id: ");
-      if (idPos != -1) {
-        idPos += 9; // Move past "user id: "
-        int idEnd = message.indexOf('\n', idPos);
-        if (idEnd != -1) {
-          userId = message.substring(idPos, idEnd);
+      int userIdPos = message.indexOf("user id: ");
+      if (userIdPos != -1) {
+        userIdPos += 9; 
+        message.trim(); 
+        userId = message.substring(userIdPos);
+
+        int nonNumericIndex = -1;
+        for (int i = 0; i < userId.length(); i++) {
+          if (!isdigit(userId.charAt(i))) {
+            nonNumericIndex = i;
+            break;
+          }
+        }
+        
+        if (nonNumericIndex != -1) {
+          userId = userId.substring(0, nonNumericIndex);
         }
       }
-
+      
       int purposePos = message.indexOf("purpose: ");
       if (purposePos != -1) {
-        purposePos += 9; // Move past "purpose: "
-        int purposeEnd = message.indexOf('\n', purposePos);
-        if (purposeEnd != -1) {
-          purpose = message.substring(purposePos, purposeEnd);
-        }
+        purposePos += 9; 
+        purpose = message.substring(purposePos);
       }
 
-      // Display on LCD
       myLCD.PCF8574_LCDGOTO(myLCD.LCDLineNumberOne, 0);
-      myLCD.PCF8574_LCDSendString("User ID: " + userId);
-      myLCD.PCF8574_LCDGOTO(myLCD.LCDLineNumberTwo , 0);
-      myLCD.PCF8574_LCDSendString("Purpose: " + purpose);
-      myLCD.PCF8574_LCDSendChar('!');
+      myLCD.PCF8574_LCDSendString("User ID: ");
+      myLCD.PCF8574_LCDSendString(userId.c_str());
+
+      myLCD.PCF8574_LCDGOTO(myLCD.LCDLineNumberTwo, 0);
+      myLCD.PCF8574_LCDSendString("Purpose: ");
+      myLCD.PCF8574_LCDSendString(purpose.c_str());
 
       delay(1000);
 
-      // Write to file
-      writeToFile(message.c_str());
+      writeToFile(message);
     }
   }
 }
