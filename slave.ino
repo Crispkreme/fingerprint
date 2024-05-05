@@ -1,7 +1,10 @@
 #include <SPI.h>
 #include <SD.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
 
 File myFile;
+LiquidCrystal_I2C lcd(0x3F, 16, 2);
 
 void writeToFile(String message) {
   Serial.print("Initializing SD card...");
@@ -27,6 +30,11 @@ void setup() {
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
+
+  lcd.init();
+  lcd.backlight();
+  lcd.setCursor(0, 0);
+  lcd.print("Hello World");
 
 }
 
