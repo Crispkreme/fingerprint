@@ -4,9 +4,7 @@
 #include "HD44780_LCD_PCF8574.h"
 
 File myFile;
-HD44780LCD myLCD(4, 16, 0x27, &Wire);
-
-#define DISPLAY_DELAY_INIT 50
+HD44780LCD myLCD( 2, 16, 0x27, &Wire);
 
 void writeToFile(String message) {
   Serial.print("Initializing SD card...");
@@ -33,20 +31,22 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
-  delay(DISPLAY_DELAY_INIT);
+  delay(50);
   myLCD.PCF8574_LCDInit(myLCD.LCDCursorTypeOn);
   myLCD.PCF8574_LCDClearScreen();
   myLCD.PCF8574_LCDBackLightSet(true);
-  myLCD.PCF8574_LCDGOTO(myLCD.LCDLineNumberOne, 0);
 }
 
 void loop() {
 
-  String titleString = "SPELVA";
-
-  myLCD.PCF8574_LCDGOTO(myLCD.LCDLineNumberOne, 0);
-  myLCD.PCF8574_LCDSendString(titleString.c_str());
-  myLCD.PCF8574_LCDSendChar(' ');
+  char teststr1[] = "Hello";
+	char teststr2[] = "World";
+	myLCD.PCF8574_LCDGOTO(myLCD.LCDLineNumberOne, 0);
+	myLCD.PCF8574_LCDSendString(teststr1);
+	myLCD.PCF8574_LCDGOTO(myLCD.LCDLineNumberTwo , 0);
+	myLCD.PCF8574_LCDSendString(teststr2); // Display a string
+	myLCD.PCF8574_LCDSendChar('!'); // Display a single character
+	delay(DISPLAY_DELAY_1);
   
   if (Serial.available()) {
 
