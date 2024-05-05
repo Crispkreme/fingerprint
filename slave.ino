@@ -7,12 +7,6 @@ File myFile;
 HD44780LCD myLCD( 2, 16, 0x27, &Wire);
 
 void writeToFile(String message) {
-  Serial.print("Initializing SD card...");
-
-  if (!SD.begin(4)) {
-    Serial.println("Initialization failed!");
-    while (true);
-  }
 
   myFile = SD.open("test.txt", FILE_WRITE);
 
@@ -29,6 +23,13 @@ void setup() {
   Serial.begin(9600);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
+  }
+
+  Serial.print("Initializing SD card...");
+
+  if (!SD.begin(4)) {
+    Serial.println("Initialization failed!");
+    while (true);
   }
 
   delay(50);
@@ -50,11 +51,13 @@ void loop() {
       // Extract user id and purpose
       String userId;
       String purpose;
+
       int idStart = message.indexOf("user id: ") + 9;
       int idEnd = message.indexOf('\n', idStart);
       if (idStart != -1 && idEnd != -1) {
         userId = message.substring(idStart, idEnd);
       }
+      
       int purposeStart = message.indexOf("purpose: ") + 9;
       int purposeEnd = message.indexOf('\n', purposeStart);
       if (purposeStart != -1 && purposeEnd != -1) {
